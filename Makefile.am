@@ -4,11 +4,12 @@ libgpdf_a_CFLAGS = -DH5_USE_18_API -fPIC -I./
 libgpdf_a_FFLAGS = -I./ -fPIC
 libgpdf_a_INCLUDES=$(all_includes)
 EXTRA_DIST=gpdf.py
-noinst_HEADERS=gpdf.h doxy.cfg
+include_HEADERS=gpdf.h
+noinst_HEADERS=doxy.cfg
 SUBDIRS = amos quadp
 ACLOCAL_AMFLAGS = -I m4
 
-bin_PROGRAMS = test
+noinst_PROGRAMS = test
 
 test_SOURCES = test.c
 test_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
