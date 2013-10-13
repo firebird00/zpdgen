@@ -39,13 +39,17 @@ How to Compile:
 
 you can compile the main library and the test binaries as follows:
 
+```
 ./configure
 make
+```
 
 configure script has some special flags in particular
 
+```
 --enable-python : generates the python wrapper interface.
 --enable-debug : enables the debug symbols to be built.
+```
 
 In other words, for example, you can enable the python wrapper interface using:
 
@@ -62,6 +66,7 @@ You also need to add -L /path/to/zpdgen -L/path/to/zpdgen/amos -L/path/to/zpdgen
 If you want to use the python wrapper, you will need numpy (http://www.numpy.org/). After compiling and generating the python wrappers (see How to Compile), you can use it as follows. 
 Here is the output from ipython:
 
+```
 In [1]: import gpdf as gp
 
 In [2]: import numpy as nm
@@ -80,14 +85,17 @@ array([-0.74052221-1.41161561j, -0.65900773-1.56713712j,
         0.96285427+0.j        ,  0.85984540+0.j        ,
         0.77921516+0.j        ,  0.71392125+0.j        ,
         0.65970808+0.j        ,  0.61381924+0.j        ])
+```
 
 Notice how the wrapper is able to treat arrays. While this is not a feature tested extensively (So I suggest verifying the result at least once with the result from a hand made loop in the case of a complex array shape), it should work for arrays of higer rank as well (tested with arrays with two and three dimensions).
 
 How to Install Systemwide
 =========================
 
+```
 ./configure --prefix dest_path
 make
 make install
+```
 
 will install libgpdf.a, ligquadp.a, libamos.a in dest_path/lib and gpdf.h in dest_path/include
