@@ -3,15 +3,19 @@ zpdgen
 
 A generalized plasma dispersion function formulation of Inm's, which are defined for Im(za)>0 as:
 
+...
                               /inf /inf
 Inm(za,zb,b) = (2/sqrt(pi)) * | dy | dx x**n*y**m*exp(-x**2-y**2)*J0(sqrt(2*b)*x)**2/(y**2+x**2/2+za-zb*y)
                           -inf/   0/
+...
 
 The idea is to reduce the above integral to a 1D integral:
 
+...
                  /inf
 Inm(za,zb,b) = 2*| dx x**n*exp(-x**2)*J0(sqrt(2*b)*x)**2*Gm(z1(x,za,zb),z2(x,za,zb))
                 0/
+...
 
 where 
 
