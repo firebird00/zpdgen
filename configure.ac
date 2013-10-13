@@ -32,6 +32,7 @@ if test "$ok" = "yes"; then
 	ZPDGEN_PYTHON_DEF=true
 else
 	ZPDGEN_PYTHON_DEF=false
+	AM_CONDITIONAL(ZPDGEN_PYTHON_ON,false)
 fi
 
 if $ZPDGEN_PYTHON_DEF ; then
