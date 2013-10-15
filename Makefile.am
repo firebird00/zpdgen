@@ -20,7 +20,7 @@ bin_SCRIPTS=inmzpd.pyf
 endif
 CLEANFILES=$(bin_SCRIPTS) *.so
 inmzpd.pyf: inmzpd.f
-	$(F2PY) --overwrite-signature -m inmzpd -h inmzpd.pyf only: inmweid : inmzpd.f
-	sed 's/:: res/,intent(out) :: res/' <inmzpd.pyf | sed 's/:: numza/, intent(in) :: numza/' | sed 's/:: za/, intent(in) :: za/'| sed 's/:: b/, intent(in) :: b/'| sed 's/:: zb/, intent(in) :: zb/'| sed 's/:: n/, intent(in) :: n/'| sed 's/:: m/, intent(in) :: m/'>tmpout
+	$(F2PY) --overwrite-signature -m inmzpd -h inmzpd.pyf only: inmweid gmweid weidgm : inmzpd.f
+	sed 's/:: res/,intent(out) :: res/' <inmzpd.pyf | sed 's/:: za/, intent(in) :: za/'| sed 's/:: b/, intent(in) :: b/'| sed 's/:: zb/, intent(in) :: zb/'| sed 's/:: n/, intent(in) :: n/'| sed 's/:: m/, intent(in) :: m/'| sed 's/:: z1/, intent(in) :: z1/'| sed 's/:: z2/, intent(in) :: z2/'>tmpout
 	mv tmpout inmzpd.pyf
 	$(F2PY) -c inmzpd.pyf $(test_LDADD)

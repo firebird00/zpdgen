@@ -4305,6 +4305,14 @@ fi
 	ZPDGEN_PYTHON_DEF=true
 else
 	ZPDGEN_PYTHON_DEF=false
+	 if false; then
+  ZPDGEN_PYTHON_ON_TRUE=
+  ZPDGEN_PYTHON_ON_FALSE='#'
+else
+  ZPDGEN_PYTHON_ON_TRUE='#'
+  ZPDGEN_PYTHON_ON_FALSE=
+fi
+
 fi
 
 if $ZPDGEN_PYTHON_DEF ; then
@@ -5448,6 +5456,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ZPDGEN_PYTHON_ON_TRUE}" && test -z "${ZPDGEN_PYTHON_ON_FALSE}"; then
+  as_fn_error $? "conditional \"ZPDGEN_PYTHON_ON\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${ZPDGEN_PYTHON_ON_TRUE}" && test -z "${ZPDGEN_PYTHON_ON_FALSE}"; then

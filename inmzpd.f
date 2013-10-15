@@ -236,7 +236,7 @@ c      endif
       end function resFpd
 
 C     inm
-      subroutine Inmweid(za,b,zb,n,m,numza,res)
+      subroutine Inmweid(za,zb,b,n,m,numza,res)
 Cf2py double complex dimension(numza) :: za
 Cf2py double precision :: b
 Cf2py double precision :: zb
@@ -246,12 +246,30 @@ Cf2py  integer, optional,depend(za) :: numza=len(za)
 Cf2py double complex dimension(numza) :: res
       double precision b,zb,xi,yi,u,v
       double complex za(numza),res(numza)
-      integer n,m,flag,k,numza
+      integer n,m,k,numza
+      logical flag
       do 10 k=1,numza
          xi=dble(za(k))
          yi=dimag(za(k))
          call inmzpd(xi,yi,zb,b,n,m,u,v,flag)
          res(k)=cmplx(u,v)
  10   continue
+      return
+      end
+
+C     inm
+      subroutine Gmweid(z1,z2,m,numza,res)
+Cf2py double complex dimension(numza) :: z1
+Cf2py double complex dimension(numza) :: z2
+Cf2py  integer :: m
+Cf2py  integer, optional,depend(z1) :: numza=len(z1)
+Cf2py double complex dimension(numza) :: res
+      double complex z1(numza),z2(numza),res(numza)
+      external weidGm
+      double complex weidGm
+      integer m,k,numza
+      do 30 k=1,numza
+         res(k)=weidGm(z1(k),z2(k),m)
+ 30   continue
       return
       end

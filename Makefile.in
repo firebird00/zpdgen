@@ -83,8 +83,8 @@ noinst_PROGRAMS = test$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) depcomp \
-	$(include_HEADERS) $(noinst_HEADERS) COPYING INSTALL ar-lib \
-	compile install-sh missing
+	$(include_HEADERS) $(noinst_HEADERS) COPYING INSTALL README \
+	ar-lib compile install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/am-check-pymod.m4 \
 	$(top_srcdir)/configure.ac
@@ -1068,8 +1068,8 @@ uninstall-am: uninstall-binSCRIPTS uninstall-includeHEADERS \
 	uninstall-libLIBRARIES
 
 inmzpd.pyf: inmzpd.f
-	$(F2PY) --overwrite-signature -m inmzpd -h inmzpd.pyf only: inmweid : inmzpd.f
-	sed 's/:: res/,intent(out) :: res/' <inmzpd.pyf | sed 's/:: numza/, intent(in) :: numza/' | sed 's/:: za/, intent(in) :: za/'| sed 's/:: b/, intent(in) :: b/'| sed 's/:: zb/, intent(in) :: zb/'| sed 's/:: n/, intent(in) :: n/'| sed 's/:: m/, intent(in) :: m/'>tmpout
+	$(F2PY) --overwrite-signature -m inmzpd -h inmzpd.pyf only: inmweid gmweid weidgm : inmzpd.f
+	sed 's/:: res/,intent(out) :: res/' <inmzpd.pyf | sed 's/:: za/, intent(in) :: za/'| sed 's/:: b/, intent(in) :: b/'| sed 's/:: zb/, intent(in) :: zb/'| sed 's/:: n/, intent(in) :: n/'| sed 's/:: m/, intent(in) :: m/'| sed 's/:: z1/, intent(in) :: z1/'| sed 's/:: z2/, intent(in) :: z2/'>tmpout
 	mv tmpout inmzpd.pyf
 	$(F2PY) -c inmzpd.pyf $(test_LDADD)
 
