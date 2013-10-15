@@ -24,7 +24,7 @@ for ns in nlist:
     plt.pcolormesh(np.real(za),np.imag(za),np.imag(inm),shading='gouraud',rasterized=True)
     plt.clim(-10,10)
     cs=plt.contour(np.real(za),np.imag(za),np.imag(inm),cnts,colors='k',linewidths=wdts*0.5)
-    aa=r'$Re[I_{'+str(n)+str(m)+r'}(\zeta_\alpha,\zeta_\beta,b)]$'
+    aa=r'$Im[I_{'+str(n)+str(m)+r'}(\zeta_\alpha,\zeta_\beta,b)]$'
     plt.text(-1,3,aa,fontsize=14)
     if (m!=4 and n!=0):
         plt.tick_params(labelbottom='off',labelleft='off')

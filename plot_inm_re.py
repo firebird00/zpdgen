@@ -13,7 +13,7 @@ vcb = np.arange(-12,14,2)
 ii=0;
 xx,yy=np.meshgrid(np.arange(-6,6,0.1),np.arange(-6,6,0.1))
 za=xx+1j*yy;
-zb=2.0
+zb=0.0
 b=0.09
 for ns in nlist:
     ii=ii+1;

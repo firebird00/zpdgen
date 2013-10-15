@@ -85,7 +85,7 @@ c     *     nlimit,40000,last,iwork,work)
          u=u+resr;
          v=v+resi;
       endif
-      if(dimag(zaa).LT.0.AND.dble(zaa).LT.0) then
+      if(dimag(zaa).LT.0.AND.dble(w).GT.0) then
          Alim=-1.0
          Blim=1.0
          CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
@@ -94,7 +94,7 @@ c     *     nlimit,40000,last,iwork,work)
      *        neval,ier,nlimit,40000,last,iwork,work)
          u=u-resr
          v=v-resi
-      else if(dimag(zaa).EQ.0.AND.dble(zaa).LT.0) then
+      else if(dimag(zaa).EQ.0.AND.dble(w).GT.0) then
          Alim=-1.0
          Blim=1.0
          CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
