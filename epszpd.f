@@ -67,7 +67,7 @@ C     *        neval,ier,nlimit,40000,last,iwork,work)
          v=resi;
       end if
 
-      if(omi.LT.0.AND.omr.LT.0) then
+      if(omi.LT.0.AND.dble(w).GT.0) then
          Alim=-1.0
          Blim=1.0
          CALL DQAG(resFepspd_re,alim,blim,epsabs,epsrel,6,resr,abserr,

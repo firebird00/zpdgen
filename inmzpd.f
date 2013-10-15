@@ -172,14 +172,14 @@ C      Write (*,*) u,v
 
       double complex function weidZm(z,m)
       double complex z,i,Z0
-      double precision xi,yi,u,v,wofzwh,flag,dgamma,sqrtpi
+      double precision xi,yi,u,v,flag,dgamma,sqrtpi
       integer m,k
       external wofzwh,dgamma
       parameter (sqrtpi = 1.77245385090552)
       i=cmplx(0,1)
       xi=dble(z)
       yi=dimag(z)
-      call wofzh(xi,yi,u,v,flag)
+      call wofzwh(xi,yi,u,v,flag)
       Z0=u+i*v
       weidZm=i*sqrtpi*Z0*z**m
       if (m.gt.0) then

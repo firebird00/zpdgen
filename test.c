@@ -31,8 +31,10 @@ int main(int argc, char *argv[]){
   za=malloc(sizeof(complex)*numx*numy);
   //  n=3;m=4;
   //  pldisp_inmzpd(4.0+4.0i,0.0,1.0,1,0);
-  for(n=0;n<=4;n++){
-    for(m=0;m<=4;m++){
+//  for(n=0;n<=4;n++){
+//    for(m=0;m<=4;m++){
+      n=1;
+      m=0;
       t=pldisp_time();
       tc=clock();
       for(lx=0;lx<numx;lx++){
@@ -61,6 +63,6 @@ int main(int argc, char *argv[]){
       pldisp_hdf5_write_complex2d("za",outhdf,za,numx,numy);
       pldisp_hdf5_write_complex2d("eps",outhdf,F,numx,numy);
       H5Fclose(outhdf->id);
-    }
-  }
+//    }
+//  }
 }
