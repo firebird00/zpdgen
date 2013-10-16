@@ -15,14 +15,16 @@ AC_PROG_RANLIB
 AM_PROG_CC_C_O
 AC_CONFIG_MACRO_DIR([m4])
 
+CFLAG=""
+FFLAGS=""
 AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug],[enables debugging]), ok=$enableval, ok=no)
 if test "$ok" = "yes"; then
 	AC_DEFINE(ZPDGEN_DEBUG,1,[define to enable debugging code.])
-	CFLAGS=" -g -O0 -pg"
-	FFLAGS=" -g -O0 -pg"
+	CFLAGS="$CFLAGS -g -O0"
+	FFLAGS="$FFLAGS -g -O0"
 else
-	CFLAGS="-O0"
-	FFLAGS="-O0"
+	CFLAGS="-O3 -funroll-loops"
+	FFLAGS="-O3 -funroll-loops"
 fi
 
 AC_ARG_ENABLE(python, AC_HELP_STRING([--enable-python],[enables python wrappers]), ok=$enableval, ok=no)

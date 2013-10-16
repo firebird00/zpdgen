@@ -49,21 +49,14 @@ C
       w=zbb**2/4-zaa
       epsrel = 1.0e-2
       epsabs = 1.0e-6
-      Alim=0.0
-c      CALL DQAG(Fpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,neval,ier,
-c     *     nlimit,40000,last,iwork,work)
-      CALL DQAGI(Fkur_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
-     *     nlimit,40000,last,iwork,work)
-c      write (*,*) resr
-
-c      CALL DQAG(Fpd_im,alim,blim,epsabs,epsrel,6,resi,abserr,neval,ier,
-c     *     nlimit,40000,last,iwork,work)
-      CALL DQAGI(Fkur_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
-     *     nlimit,40000,last,iwork,work)
-
+      Alim=-1.0
+      Blim=1.0
+      CALL DQAG(Fkur_re,alim,blim,epsabs,epsrel,6,resr,abserr,
+     *     neval,ier, nlimit,40000,last,iwork,work)
+      CALL DQAG(Fkur_im,alim,blim,epsabs,epsrel,6,resi,abserr,
+     *     neval,ier, nlimit,40000,last,iwork,work)
       u=resr;
       v=resi;
-
       if(dimag(zaa).LT.0.AND.dble(zaa).LT.0) then
          Alim=-1.0
          Blim=1.0
@@ -90,86 +83,139 @@ c     *     nlimit,40000,last,iwork,work)
 *
       END
 
-      double precision function Fkur_re(r)
-      double complex Fkur_int_re
+      double precision function Fkur_re(mu)
+      double complex Fkur_int_re,zaa,w
       external Fkur_int_re
-      double precision r,rf
-      common /fkurcom/ rf
-      integer neval,ier,nlimit,last,iwork(10000)
+      double precision mu,muf,zbb,bbi,limsinglg
+      integer neval,ier,nlimit,last,iwork(10000),mf,nf,npts2,spoints(3)
       double precision alim,blim,epsabs,epsrel,resr,abserr,work(40000)
+      common /inmcom/ mf,nf,zbb,bbi,zaa,w
+      common /fkurcom/ muf
+      PARAMETER (limsinglg=1.0e-5)
       epsrel = 1.0e-2
       epsabs = 1.0e-6
-      Alim=-1.0
-      Blim=1.0
-      rf=r
-       nlimit=10000
-      CALL DQAG(Fkur_int_re,alim,blim,epsabs,epsrel,6,resr,abserr,
-     *     neval,ier, nlimit,40000,last,iwork,work)
-      Fkur_re=resr
+      muf=mu
+      nlimit=10000
+      if(dabs(dimag(w)).GT.limsinglg.OR.dble(w).LT.0) then
+         Alim=0.0
+         CALL DQAGI(Fkur_int_re,alim,1,epsabs,epsrel,resr,abserr,neval,
+     *        ier,nlimit,40000,last,iwork,work)
+         Fkur_re=resr
+         if (ier.GT.0) then
+            write(*,*) "problem in Fkur_Re (in if):"
+            write (*,*) "w:", w, "ier:", ier
+         end if
+      else
+         alim=0.0
+         blim=dsqrt(1.01*dble(w))
+         spoints(1)=dsqrt(dble(w))
+         npts2=3
+         CALL DQAGP(Fkur_int_re,alim,blim,npts2,spoints,epsabs,epsrel,
+     *        resr,abserr,neval,ier,nlimit,40000,last,iwork,work)
+         if (ier.GT.0) then
+            write(*,*) "problem in Fkur_Re (in else, DQAGP):"
+            write (*,*) "w:", w, "ier:", ier
+         end if
+         Fkur_re=resr;
+         alim=blim;
+         CALL DQAGI(Fkur_int_re,alim,1,epsabs,epsrel,resr,abserr,neval,
+     *        ier,nlimit,40000,last,iwork,work)
+         Fkur_re=Fkur_re+resr;
+         if (ier.GT.0) then
+            write(*,*) "problem in Fkur_Re (in else, DQAGI):"
+            write (*,*) "w:", w, "ier:", ier
+         end if
+      endif
       return
       end function Fkur_re
 
-      double precision function Fkur_int_re(mu)
+      double precision function Fkur_int_re(r)
       double complex Fkur,res
       external Fkur
-      double precision rf,mu
-      common /fkurcom/ rf
-      res=Fkur(mu)
-c      write(*,*) res
+      double precision muf,r
+      common /fkurcom/ muf
+      res=Fkur(r)
       Fkur_int_re=dble(res)
       return
       end function Fkur_int_re
 
-      double precision function Fkur_im(r)
-      double complex Fkur_int_im
+      double precision function Fkur_im(mu)
+      double complex Fkur_int_im,zaa,w
       external Fkur_int_im
-      double precision r,rf
-      common /fkurcom/ rf
-      integer neval,ier,nlimit,last,iwork(10000)
+      double precision mu,muf,zbb,bbi,limsinglg
+      common /fkurcom/ muf
+      integer neval,ier,nlimit,last,iwork(10000),mf,nf,npts2,spoints(3)
       double precision alim,blim,epsabs,epsrel,resi,abserr,work(40000)
+      common /inmcom/ mf,nf,zbb,bbi,zaa,w
+      PARAMETER (limsinglg=1.0e-5)
       epsrel = 1.0e-2
       epsabs = 1.0e-6
-      Alim=-1.0
-      Blim=1.0
-      rf=r
-       nlimit=10000
-      CALL DQAG(Fkur_int_im,alim,blim,epsabs,epsrel,6,resi,abserr,
-     *     neval,ier, nlimit,40000,last,iwork,work)
-      Fkur_im=resi
+      muf=mu
+      nlimit=10000
+      Alim=0.0
+      if(dabs(dimag(w)).GT.limsinglg.OR.dble(w).LT.0) then
+         CALL DQAGI(Fkur_int_im,alim,1,epsabs,epsrel,resi,abserr,neval,
+     *        ier,nlimit,40000,last,iwork,work)
+         Fkur_im=resi
+         if (ier.GT.0) then
+            write(*,*) "problem in Fkur_im (in if):"
+            write (*,*) "w:", w, "ier:", ier
+         end if
+      else
+         alim=0.0
+         blim=dsqrt(1.01*dble(w))
+         npts2=3
+         spoints(1)=dsqrt(dble(w))
+         epsrel = 1.0e-4
+         epsabs = 1.0e-12
+         CALL DQAGP(Fkur_int_im,alim,blim,npts2,spoints,epsabs,epsrel,
+     *        resi,abserr,neval,ier,nlimit,40000,last,iwork,work)
+         Fkur_im=resi
+         alim=blim;
+         if (ier.GT.0) then
+            write(*,*) "problem in Fkur_im (in else DQAGP):"
+            write (*,*) "w:", w, "ier:", ier
+         end if
+         CALL DQAGI(Fkur_int_im,alim,1,epsabs,epsrel,resi,abserr,neval,
+     *        ier,nlimit,40000,last,iwork,work)
+         if (ier.GT.0) then
+            write(*,*) "problem in Fkur_im (in else DQAGI):"
+            write (*,*) "w:", w, "ier:", ier
+         end if
+         Fkur_im=Fkur_im+resi;
+      endif
       return
       end function Fkur_im
 
-      double precision function Fkur_int_im(mu)
+      double precision function Fkur_int_im(r)
       double complex Fkur,res
       external Fkur
-      double precision rf,mu
-      common /fkurcom/ rf
-      res=Fkur(mu)
-c      write (*,*) res
-c      Fkur_int_im=dimag(Fkur(mu))
+      double precision r,muf
+      common /fkurcom/ muf
+      res=Fkur(r)
       Fkur_int_im=dimag(res)
       return
       end function Fkur_int_im
 
-      double complex function Fkur(mu)
+      double complex function Fkur(r)
       double precision limsinglg,xbr,xbi,Jr0,Ji0,zbb,bbi,sqrtpi
       integer mf,nf,ierr,nz
       double complex zaa,i,w,xb,J0,res
-      double precision rf,mu
-      common /fkurcom/ rf
+      double precision r,muf
+      common /fkurcom/ muf
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       parameter (limsinglg = 1.0e-5, sqrtpi = 1.77245385090552)
-      xb=2.0*dsqrt(bbi*(1-mu**2))*rf
+      xb=2.0*dsqrt(bbi*(1-muf**2))*r
       xbr=dble(xb)
       xbi=dimag(xb)
       i=cmplx(0,1)
       call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
       J0=cmplx(Jr0,Ji0)
       If(dble(w).ne.0) then
-         res=2.0**(0.5*(nf+3))*J0**2/sqrtpi*rf**(nf+1)*
-     *        (mu*rf+zbb*0.5)**mf*
-     *        (1-mu**2)**(0.5*(nf-1))/(rf-zsqrt(w))/(rf+zsqrt(w))*
-     *        dexp(-(mu*rf+0.5*zbb)**2-2.0*(1.0-mu**2)*rf**2)
+         res=2.0**(0.5*(nf+3))*J0**2/sqrtpi*r**(nf+1)*
+     *        (muf*r+zbb*0.5)**mf*
+     *        (1-muf**2)**(0.5*(nf-1))/(r-zsqrt(w))/(r+zsqrt(w))*
+     *        dexp(-(muf*r+0.5*zbb)**2-2.0*(1.0-muf**2)*r**2)
       else
          res=0.0
       end if

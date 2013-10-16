@@ -57,12 +57,8 @@ C
       npts2=3
       Alim=0.0
       if(dabs(dimag(w)).GT.limsingsm.OR.dble(w).LT.0) then
-c     CALL DQAG(Fpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,neval,ier,
-c     *     nlimit,40000,last,iwork,work)
          CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
      *        nlimit,40000,last,iwork,work)
-c     CALL DQAG(Fpd_im,alim,blim,epsabs,epsrel,6,resi,abserr,neval,ier,
-c     *     nlimit,40000,last,iwork,work)
          CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
      *        nlimit,40000,last,iwork,work)
          u=resr;
@@ -172,23 +168,20 @@ C      Write (*,*) u,v
 
       double complex function weidZm(z,m)
       double complex z,i,Z0
-      double precision xi,yi,u,v,wofzwh,flag,dgamma,sqrtpi
+      double precision xi,yi,u,v,flag,dgamma,sqrtpi
       integer m,k
-      external wofzwh,dgamma
+      external wofzwh16,dgamma
       parameter (sqrtpi = 1.77245385090552)
       i=cmplx(0,1)
       xi=dble(z)
       yi=dimag(z)
-      call wofzh(xi,yi,u,v,flag)
+      call wofzwh16(xi,yi,u,v,flag)
       Z0=u+i*v
       weidZm=i*sqrtpi*Z0*z**m
       if (m.gt.0) then
          do 20 k=1,m
             weidZm=weidZm+1.0/sqrtpi*dgamma((m-k+1)*0.5d0)*z**(k-1)
  20      continue
-C      else
-C         weidZm=0.0
-c     -1.0/sqrtpi*dgamma((m+1.0)*0.5)/z+recwZm(z,m+1)/z
       end if 
       return
       end function weidZm
