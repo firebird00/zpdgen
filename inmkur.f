@@ -1,3 +1,131 @@
+
+      subroutine epskur(omr,omi,pars,u,v,flag)
+      double precision omr,omi,ky,kpar,omdi,tau,etai,u,v,
+     *     minomdlim,sqrttwo,omsi,epsabs,epsrel,alim,blim,
+     *     abserr,bbi,work(40000),resr,resi,zbb
+      double complex zaa,i,w,om
+      double precision resFepspd_im,resFepspd_re,pars(5),
+     *     Fepskur_im,Fepskur_re
+      integer nlimit,last,neval,ier,iwork(10000)
+      logical flag
+      common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
+      PARAMETER (MINOMDLIM = -1e-6,
+     *     nlimit=10000,
+     *     sqrttwo =1.414213562373095 )
+      FLAG=.FALSE.
+      om=cmplx(omr,omi)
+      omdi=pars(1)
+      etai=pars(2)
+      tau=pars(3)
+      ky=pars(4)
+      kpar=pars(5)
+
+      if(omdi.LT.MINOMDLIM) then
+         zaa=-0.5*cmplx(omr,omi)/omdi
+         zbb=kpar/sqrttwo/omdi
+         w=zbb**2/4-zaa
+         bbi=ky**2;
+         omsi=-ky;
+         epsrel = 1.0e-2
+         epsabs = 1.0e-6
+         Alim=-1.0
+         Blim=1.0
+         CALL DQAG(Fepskur_re,alim,blim,epsabs,epsrel,6,resr,abserr,
+     *        neval,ier, nlimit,40000,last,iwork,work)
+         CALL DQAG(Fepskur_im,alim,blim,epsabs,epsrel,6,resi,abserr,
+     *        neval,ier, nlimit,40000,last,iwork,work)
+         u=resr+1.0+1.0/tau;
+         v=resi;
+      endif
+
+      RETURN
+      end subroutine epskur
+
+      double precision function Fepskur_re(mu)
+      double complex Fepskur_int_re
+      external Fepskur_int_re
+      double precision mu,muf
+      integer neval,ier,nlimit,last,iwork(10000)
+      double precision alim,blim,epsabs,epsrel,resr,abserr,work(40000)
+      common /fkurcom/ muf
+      epsrel = 1.0e-2
+      epsabs = 1.0e-6
+      muf=mu
+      nlimit=10000
+      Alim=0.0
+      CALL DQAGI(Fepskur_int_re,alim,1,epsabs,epsrel,resr,abserr,neval,
+     *     ier,nlimit,40000,last,iwork,work)
+      Fepskur_re=resr
+      return
+      end function Fepskur_re
+
+      double precision function Fepskur_im(mu)
+      double complex Fepskur_int_im
+      external Fepskur_int_im
+      double precision mu,muf
+      integer neval,ier,nlimit,last,iwork(10000)
+      double precision alim,blim,epsabs,epsrel,resi,abserr,work(40000)
+      common /fkurcom/ muf
+      epsrel = 1.0e-2
+      epsabs = 1.0e-6
+      muf=mu
+      nlimit=10000
+      Alim=0.0
+      CALL DQAGI(Fepskur_int_im,alim,1,epsabs,epsrel,resi,abserr,neval,
+     *     ier,nlimit,40000,last,iwork,work)
+      Fepskur_im=resi
+      return
+      end function Fepskur_im
+
+      double precision function Fepskur_int_im(r)
+      double complex Fepskur,res
+      external Fepskur
+      double precision r,muf
+      common /fkurcom/ muf
+      res=Fepskur(r)
+      Fepskur_int_im=dimag(res)
+      return
+      end function Fepskur_int_im
+
+      double precision function Fepskur_int_re(r)
+      double complex Fepskur,res
+      external Fepskur
+      double precision muf,r
+      common /fkurcom/ muf
+      res=Fepskur(r)
+      Fepskur_int_re=dble(res)
+      return
+      end function Fepskur_int_re
+
+      double complex function Fepskur(r)
+      double precision limsinglg,xbr,xbi,Jr0,Ji0,zbb,bbi,sqrtpi,
+     *     omdi,omsi,tau,etai,ky,kpar
+      integer mf,nf,ierr,nz
+      double complex zaa,i,w,xb,J0,res,om
+      double precision r,muf
+      common /fkurcom/ muf
+      common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
+      parameter (sqrtpi = 1.77245385090552)
+      xb=2.0*dsqrt(bbi*(1-muf**2))*r
+      xbr=dble(xb)
+      xbi=dimag(xb)
+      i=cmplx(0,1)
+      call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
+      J0=cmplx(Jr0,Ji0)
+      If(dble(w).ne.0) then
+         res=2.0/omdi*J0**2/sqrtpi*r**2/(r-zsqrt(w))/(r+zsqrt(w))*
+     *        dexp(-(muf*r+0.5*zbb)**2-2.0*(1.0-muf**2)*r**2)*
+     *        (om-omsi*(1.0-1.5*etai)-2*(1-muf**2)**2*r**2*omsi*etai
+     *        -(muf*r+zbb*0.5)**2*omsi*etai)
+      else
+         res=0.0
+      end if
+c      write (*,*) res
+      Fepskur=res;
+      return
+      end function Fepskur
+
+
 C      INMZPD
       subroutine inmkur (xi, yi, zb, bi, n, m, u, v, flag)
 C  PARAMETER LIST

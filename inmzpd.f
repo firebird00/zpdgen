@@ -175,11 +175,7 @@ C      Write (*,*) u,v
       i=cmplx(0,1)
       xi=dble(z)
       yi=dimag(z)
-<<<<<<< HEAD
       call wofzwh16(xi,yi,u,v,flag)
-=======
-      call wofzwh(xi,yi,u,v,flag)
->>>>>>> 6df2dda88b5c6a538b0f2354ef01e1bc5a2597ff
       Z0=u+i*v
       weidZm=i*sqrtpi*Z0*z**m
       if (m.gt.0) then
