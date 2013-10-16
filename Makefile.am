@@ -14,14 +14,22 @@ noinst_PROGRAMS = timetest
 timetest_SOURCES = timetest.f
 timetest_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
 timetest_CFLAGS = -I./
+<<<<<<< HEAD
 timetest_FFLAGS = -I./ -fimplicit-none
+=======
+timetest_FFLAGS = -I./
+>>>>>>> 6df2dda88b5c6a538b0f2354ef01e1bc5a2597ff
 timetest_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
 if ZPDGEN_PYTHON_ON
 bin_SCRIPTS=inmzpd.pyf
 endif
 CLEANFILES=$(bin_SCRIPTS) *.so
 inmzpd.pyf: inmzpd.f Makefile.am
+<<<<<<< HEAD
 	$(F2PY) --overwrite-signature -m inmzpd -h inmzpd.pyf only: inmweid : inmzpd.f
+=======
+	$(F2PY) --overwrite-signature -m inmzpd -h inmzpd.pyf only : inmweid : inmzpd.f
+>>>>>>> 6df2dda88b5c6a538b0f2354ef01e1bc5a2597ff
 	sed 's/:: res/,intent(out) :: res/' <inmzpd.pyf | sed 's/:: za/, intent(in) :: za/'| sed 's/:: b/, intent(in) :: b/'| sed 's/:: zb/, intent(in) :: zb/'| sed 's/:: n/, intent(in) :: n/'| sed 's/:: m/, intent(in) :: m/'| sed 's/:: z1/, intent(in) :: z1/'| sed 's/:: z2/, intent(in) :: z2/'>tmpout
 	mv tmpout inmzpd.pyf
 	$(F2PY) -c inmzpd.pyf $(timetest_LDADD)
