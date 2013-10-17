@@ -4,6 +4,8 @@
       double complex za,res,i,zamin,zamax,dza,ttf(1000,1000)
       double complex i10,i12,i30,om
       external inmzpd
+      external epszpd
+      external epskur
       integer n,m,numx,numy,lx,ly,k,ns(3,2),numt
       logical flag
       real finish,start

@@ -6,6 +6,7 @@
       double complex zaa,i,w,om
       double precision resFepspd_im,resFepspd_re,pars(5),
      *     Fepskur_im,Fepskur_re
+      external Fepskur_re, Fepskur_im
       integer nlimit,last,neval,ier,iwork(10000)
       logical flag
       common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
