@@ -83,8 +83,8 @@ noinst_PROGRAMS = timetest$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) depcomp \
-	$(include_HEADERS) $(noinst_HEADERS) COPYING INSTALL README \
-	ar-lib compile install-sh missing
+	$(include_HEADERS) $(noinst_HEADERS) COPYING INSTALL ar-lib \
+	compile install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/am-check-pymod.m4 \
 	$(top_srcdir)/configure.ac
