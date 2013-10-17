@@ -8,21 +8,21 @@ extern void wofzwh_(double*, double*, double*, double*, int*);
 extern void zbesj_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
 extern void zbesi_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
 extern void zbesk_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
-extern void inmzpd_(double*, double*, double*,double *, int*, int*, double*, double*, int*);
+extern void inmzpd_(double*, double*, double*,double *, int*, int*, int *, double*, double*, int*);
 extern void inmkur_(double*, double*, double*,double *, int*, int*, double*, double*, int*);
-extern void epszpd_(double*, double*, double*, double*, double*, int*);
+extern void epszpd_(double*, double*, double*, int *, double*, double*, int*);
 extern void zgeev_( char* jobvl, char* jobvr, int* n, complex* a,
 		    int* lda, complex* w, complex* vl, int* ldvl, complex* vr, int* ldvr,
 		    complex* work, int* lwork, double* rwork, int* info );
 
-complex pldisp_inmzpd(complex za, double zb, double bi, int n, int m){
+complex pldisp_inmzpd(complex za, double zb, double bi, int n, int m, int nw){
   complex res;
   double zr=creal(za);
   double zi=cimag(za);
   double *cyr=malloc(sizeof(double)*1);
   double *cyi=malloc(sizeof(double)*1);
   int *flag=malloc(sizeof(int)*1);
-  inmzpd_(&zr,&zi, &zb, &bi, &n,&m, cyr,cyi,flag);
+  inmzpd_(&zr,&zi, &zb, &bi, &n,&m, &nw, cyr,cyi,flag);
   if(flag[0]!=0){
     printf("error in inmzpd!\n");
     printf("za=(%f,%f)\n",creal(za),cimag(za));
@@ -53,14 +53,14 @@ complex pldisp_inmkur(complex za, double zb, double bi, int n, int m){
   return res;
 }
 
-complex pldisp_epszpd(complex om, pldisp_eps_pars *pars){
+complex pldisp_epszpd(complex om, pldisp_eps_pars *pars,int nw){
   complex res;
   double zr=creal(om);
   double zi=cimag(om);
   double *cyr=malloc(sizeof(double)*1);
   double *cyi=malloc(sizeof(double)*1);
   int *flag=malloc(sizeof(int)*1);
-  epszpd_(&zr,&zi, (double *)pars, cyr,cyi,flag);
+  epszpd_(&zr,&zi, (double *)pars, &nw, cyr,cyi,flag);
   if(flag[0]!=0){
     printf("error in epszpd!\n");
     printf("om=(%f,%f)\n",creal(om),cimag(om));

@@ -6,10 +6,11 @@
       external inmzpd
       external epszpd
       external epskur
-      integer n,m,numx,numy,lx,ly,k,ns(3,2),numt
+      integer n,m,numx,numy,lx,ly,k,ns(3,2),numt,nws(4),nw,l
       logical flag
       real finish,start
       data ns/1,1,3,0,2,0/
+      data nws/1,4,8,16/
       i=cmplx(0,1)
       zamin=-6.0-6.05*i
       zamax=6.0+5.95*i
@@ -25,47 +26,52 @@
       kpar=0.0
       pars=(/omdi,etai,tau,ky,kpar/)
       omsi=-ky
-      do 20 k=1,5
-         if(k.LT.4) then
-            n=ns(k,1)
-            m=ns(k,2);
-            print '("computing I",i1,i1," for ", i3," x",i3,
-     *" points...")',n,m,numx+1,numy+1
-         else if (k.EQ.4) then
-            print '("computing eps(om,k) [using Inms] for ", i3," x",i3,
-     *" points...")',numx+1,numy+1
-         else if (k.EQ.5) then
-            print '("computing eps(om,k) [combined] for ", i3," x",i3,
-     *" points...")',numx+1,numy+1
-         endif
-         call cpu_time(start)
-         do 10 lx=0,numx
-            do 10 ly=0,numy
-               za=zamin+dble(dza)*lx+i*dimag(dza)*ly
-               xi=dble(za)
-               yi=dimag(za)
-               if(k.LT.4) then
-                  call inmzpd(xi,yi,zb,b,n,m,u,v,flag)
-                  ttf(lx+1,ly+1)=cmplx(u,v);
-               else if (k.EQ.4) then
-                  call inmzpd(xi,yi,zb,b,1,0,u,v,flag)
-                  i10=cmplx(u,v)
-                  call inmzpd(xi,yi,zb,b,1,2,u,v,flag)
-                  i12=cmplx(u,v)
-                  call inmzpd(xi,yi,zb,b,3,0,u,v,flag)
-                  i30=cmplx(u,v)
-                  om=-2*za*omdi
-                  ttf(lx+1,ly+1)=1.0+1.0/tau+0.5/omdi*(
-     *                 i10*(om-omsi*(1.0-1.5*etai))
-     *                 -omsi*etai*(i30+i12))
-               else if (k.EQ.5) then
-                  call epszpd(xi,yi,pars,u,v,flag)
-                  ttf(lx+1,ly+1)=cmplx(u,v);
-               endif
- 10         continue
-      call cpu_time(finish)
-      print '("Time = ",f12.6," seconds.")',finish-start
- 20         continue
+
+      do 50 l=1,4
+         nw=nws(l)
+         do 20 k=1,5
+            if(k.LT.4) then
+               n=ns(k,1)
+               m=ns(k,2);
+               print '("computing I",i1,i1," for ", i3," x",i3,
+     *" points, nw=",i2,"...")',n,m,numx+1,numy+1,nw
+            else if (k.EQ.4) then
+               print '("computing eps(om,k) [using Inms] for "
+     *, i3," x",i3," points, nw=",i2,"...")',numx+1,numy+1,nw
+            else if (k.EQ.5) then
+               print '("computing eps(om,k) [combined] for ", i3," x",i3,
+     *" points, nw=",i2,"...")',numx+1,numy+1,nw
+            endif
+            call cpu_time(start)
+            
+            do 10 lx=0,numx
+               do 10 ly=0,numy
+                  za=zamin+dble(dza)*lx+i*dimag(dza)*ly
+                  xi=dble(za)
+                  yi=dimag(za)
+                  if(k.LT.4) then
+                     call inmzpd(xi,yi,zb,b,n,m,nw,u,v,flag)
+                     ttf(lx+1,ly+1)=cmplx(u,v);
+                  else if (k.EQ.4) then
+                     call inmzpd(xi,yi,zb,b,1,0,nw,u,v,flag)
+                     i10=cmplx(u,v)
+                     call inmzpd(xi,yi,zb,b,1,2,nw,u,v,flag)
+                     i12=cmplx(u,v)
+                     call inmzpd(xi,yi,zb,b,3,0,nw,u,v,flag)
+                     i30=cmplx(u,v)
+                     om=-2*za*omdi
+                     ttf(lx+1,ly+1)=1.0+1.0/tau+0.5/omdi*(
+     *                    i10*(om-omsi*(1.0-1.5*etai))
+     *                    -omsi*etai*(i30+i12))
+                  else if (k.EQ.5) then
+                     call epszpd(xi,yi,pars,nw,u,v,flag)
+                     ttf(lx+1,ly+1)=cmplx(u,v);
+                  endif
+ 10       continue
+          call cpu_time(finish)
+          print '("Time = ",f12.6," seconds.")',finish-start
+ 20    continue
+ 50    continue
 
       do 40 k=1,5
          if(k.LT.4) then

@@ -44,11 +44,11 @@ complex pldisp_wofzh(complex z);
 ///the wofzw
 complex pldisp_wofzwh(complex z);
 ///the inmzpd
-complex pldisp_inmzpd(complex za, double zb, double bi, int n, int m);
+complex pldisp_inmzpd(complex za, double zb, double bi, int n, int m, int nw);
 ///the inmkur
 complex pldisp_inmkur(complex za, double zb, double bi, int n, int m);
 ///the epszpd
-complex pldisp_epszpd(complex om,pldisp_eps_pars *ps);
+complex pldisp_epszpd(complex om,pldisp_eps_pars *ps, int nw);
 /// utility function used to compute elapsed time.
 unsigned long int pldisp_time();
 

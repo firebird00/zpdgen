@@ -1,5 +1,5 @@
 C      INMZPD
-      subroutine inmzpd (xi, yi, zb, bi, n, m, u, v, flag)
+      subroutine inmzpd (xi, yi, zb, bi, n, m, nw, u, v, flag)
 Cf2py double precision intent(out) u,v
 Cf2py integer intent(out) flag
 C
@@ -31,7 +31,7 @@ C
      *     yquad, ysum,epsabs,epsrel,alim,blim,key,result,abserr,neval,
      *     ier,limit,lenw, work(40000),resr,resi,zbb,bbi,limsingsm
       double complex zaa,za,i,w
-      INTEGER n,m,np1,nu,j,l,iwork(10000)
+      INTEGER n,m,np1,nu,j,l,iwork(10000),nweid,nw
       LOGICAL A, B, FLAG
       integer nlimit,mf,nf,last,npts2,spoints(3)
       PARAMETER (FACTOR   = 1.12837916709551257388D0,
@@ -43,8 +43,10 @@ C
       double precision fpd_re,fpd_im
       EXTERNAL DQAG, fpd_re,fpd_im,resfpd_im,resfpd_re
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
+      common /nweid/ nweid
       FLAG = .FALSE.
       i=cmplx(0,1)
+      nweid=nw
       za=XI+i*YI
       zaa=za
       zbb=zb
@@ -169,13 +171,26 @@ C      Write (*,*) u,v
       double complex function weidZm(z,m)
       double complex z,i,Z0
       double precision xi,yi,u,v,flag,dgamma,sqrtpi
-      integer m,k
-      external wofzwh16,dgamma
+      integer m,k,nweid
+      external wofzwh16,wofzwh8,wofzwh4,wofzh,dgamma
       parameter (sqrtpi = 1.77245385090552)
+      common /nweid/ nweid
       i=cmplx(0,1)
       xi=dble(z)
       yi=dimag(z)
-      call wofzwh16(xi,yi,u,v,flag)
+
+      select case (nweid)
+      case(1)
+         call wofzh(xi,yi,u,v,flag)
+      case(4)
+         call wofzwh4(xi,yi,u,v,flag)
+      case(8)
+         call wofzwh8(xi,yi,u,v,flag)
+      case(16)
+         call wofzwh16(xi,yi,u,v,flag)
+      case default
+         call wofzwh16(xi,yi,u,v,flag)
+      end select
       Z0=u+i*v
       weidZm=i*sqrtpi*Z0*z**m
       if (m.gt.0) then
@@ -229,22 +244,23 @@ c      endif
       end function resFpd
 
 C     inm
-      subroutine Inmweid(za,zb,b,n,m,numza,res)
+      subroutine Inmweid(za,zb,b,n,m,nw,numza,res)
 Cf2py double complex dimension(numza) :: za
 Cf2py double precision :: b
 Cf2py double precision :: zb
 Cf2py  integer :: n
 Cf2py  integer :: m
+Cf2py  integer :: nw
 Cf2py  integer, optional,depend(za) :: numza=len(za)
 Cf2py double complex dimension(numza) :: res
       double precision b,zb,xi,yi,u,v
       double complex za(numza),res(numza)
-      integer n,m,k,numza
+      integer n,m,k,numza,nw
       logical flag
       do 10 k=1,numza
          xi=dble(za(k))
          yi=dimag(za(k))
-         call inmzpd(xi,yi,zb,b,n,m,u,v,flag)
+         call inmzpd(xi,yi,zb,b,n,m,nw,u,v,flag)
          res(k)=cmplx(u,v)
  10   continue
       return
