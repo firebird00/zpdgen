@@ -1,8 +1,8 @@
 from numpy import reshape,shape,transpose
 from inmzpd import inmweid
 
-def Inm(za,zb,b,n,m,nw=16):
-    res=inmweid(za,zb,b,n,m,nw)
+def Inm(za,zb,b,n,m):
+    res=inmweid(za,zb,b,n,m)
     if (shape(za) ==()):
         res=res[0]
         return res

@@ -1,5 +1,5 @@
 C      INMZPD
-      subroutine inmzpd (xi, yi, zb, bi, n, m, nw, u, v, flag)
+      subroutine inmzpd (xi, yi, zb, bi, n, m, u, v, flag)
 Cf2py double precision intent(out) u,v
 Cf2py integer intent(out) flag
 C
@@ -25,28 +25,20 @@ C
 C
 
       implicit none
-      DOUBLE PRECISION xi,yi,bi,zb,z1,z2,daux,x,y,xabs,yabs,u,v, 
-     *     factor,rmaxreal, rmaxexp, rmaxgoni, h,h2, kapn, qlambda,
-     *     qrho, rx,ry,sx,sy,tx,ty, u1, u2, v1,v2,xabsq,xaux,xquad,xsum,
-     *     yquad, ysum,epsabs,epsrel,alim,blim,key,result,abserr,neval,
+      DOUBLE PRECISION xi,yi,bi,zb,z1,z2,u,v, 
+     *     epsabs,epsrel,alim,blim,abserr,neval,
      *     ier,limit,lenw, work(40000),resr,resi,zbb,bbi,limsingsm
       double complex zaa,za,i,w
-      INTEGER n,m,np1,nu,j,l,iwork(10000),nweid,nw
+      INTEGER n,m,np1,nu,j,l,iwork(10000)
       LOGICAL A, B, FLAG
       integer nlimit,mf,nf,last,npts2,spoints(3)
-      PARAMETER (FACTOR   = 1.12837916709551257388D0,
-     *     RMAXREAL = 0.5D+154,
-     *     RMAXEXP  = 708.503061461606D0,
-     *     RMAXGONI = 3.53711887601422D+15,
-     *     nlimit=10000,
-     *     limsingsm=1.0e-8)
+      PARAMETER (nlimit=10000,limsingsm=1.0e-8,npts2=3,
+     *     epsrel=1.0e-2,epsabs=1.0e-6)
       double precision fpd_re,fpd_im
       EXTERNAL DQAG, fpd_re,fpd_im,resfpd_im,resfpd_re
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
-      common /nweid/ nweid
       FLAG = .FALSE.
       i=cmplx(0,1)
-      nweid=nw
       za=XI+i*YI
       zaa=za
       zbb=zb
@@ -54,11 +46,8 @@ C
       mf=m
       nf=n
       w=zbb**2/4-zaa
-      epsrel = 1.0e-2
-      epsabs = 1.0e-6
-      npts2=3
-      Alim=0.0
       if(dabs(dimag(w)).GT.limsingsm.OR.dble(w).LT.0) then
+         alim=0.0
          CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
      *        nlimit,40000,last,iwork,work)
          CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
@@ -171,26 +160,13 @@ C      Write (*,*) u,v
       double complex function weidZm(z,m)
       double complex z,i,Z0
       double precision xi,yi,u,v,flag,dgamma,sqrtpi
-      integer m,k,nweid
-      external wofzwh16,wofzwh8,wofzwh4,wofzh,dgamma
+      integer m,k
+      external wofzwh,dgamma
       parameter (sqrtpi = 1.77245385090552)
-      common /nweid/ nweid
       i=cmplx(0,1)
       xi=dble(z)
       yi=dimag(z)
-
-      select case (nweid)
-      case(1)
-         call wofzh(xi,yi,u,v,flag)
-      case(4)
-         call wofzwh4(xi,yi,u,v,flag)
-      case(8)
-         call wofzwh8(xi,yi,u,v,flag)
-      case(16)
-         call wofzwh16(xi,yi,u,v,flag)
-      case default
-         call wofzwh16(xi,yi,u,v,flag)
-      end select
+      call wofzwh(xi,yi,u,v,flag)
       Z0=u+i*v
       weidZm=i*sqrtpi*Z0*z**m
       if (m.gt.0) then
@@ -244,23 +220,22 @@ c      endif
       end function resFpd
 
 C     inm
-      subroutine Inmweid(za,zb,b,n,m,nw,numza,res)
+      subroutine Inmweid(za,zb,b,n,m,numza,res)
 Cf2py double complex dimension(numza) :: za
 Cf2py double precision :: b
 Cf2py double precision :: zb
 Cf2py  integer :: n
 Cf2py  integer :: m
-Cf2py  integer :: nw
 Cf2py  integer, optional,depend(za) :: numza=len(za)
 Cf2py double complex dimension(numza) :: res
       double precision b,zb,xi,yi,u,v
       double complex za(numza),res(numza)
-      integer n,m,k,numza,nw
+      integer n,m,k,numza
       logical flag
       do 10 k=1,numza
          xi=dble(za(k))
          yi=dimag(za(k))
-         call inmzpd(xi,yi,zb,b,n,m,nw,u,v,flag)
+         call inmzpd(xi,yi,zb,b,n,m,u,v,flag)
          res(k)=cmplx(u,v)
  10   continue
       return

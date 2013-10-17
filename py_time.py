@@ -13,5 +13,5 @@ for ns in nlist:
     [n,m]=ns;
     print('computing I'+str(n)+str(m)+' ...')
     t0 = time.clock()
-    inm=gp.Inm(za,zb,b,n,m,16)
+    inm=gp.Inm(za,zb,b,n,m)
     print(time.clock()-t0,"seconds")

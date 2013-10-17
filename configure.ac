@@ -62,11 +62,6 @@ AC_CHECK_LIB([m],[cos],[],[echo "Error! You need libm."
                         exit -1
                         ])
 
-AC_CHECK_LIB([hdf5],[main],[],[echo "Error! You need hdf5."
-                        echo "see http://hdf.ncsa.uiuc.edu/HDF5/"
-                        exit -1
-                        ])
-
 AC_CHECK_LIB([gfortran],[main],[],[echo "Error! You need gfortran runtime library."
                         echo  "see http://gcc.gnu.org/fortran/"
                         exit -1
