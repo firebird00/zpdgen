@@ -28,10 +28,15 @@
                xi=dble(za)
                yi=dimag(za)
                call inmzpd(xi,yi,zb,b,n,m,u,v,flag)
+               if(flag) goto 100
                ttf(lx+1,ly+1)=cmplx(u,v);
  10         continue
          call cpu_time(finish)
          print '("Time = ",f12.6," seconds.")',finish-start
  20   continue
       stop
+
+ 100  write(*,*) "error!"
+      stop
       end
+

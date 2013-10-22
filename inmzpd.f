@@ -27,15 +27,17 @@ C
       implicit none
       DOUBLE PRECISION xi,yi,bi,zb,z1,z2,u,v, 
      *     epsabs,epsrel,alim,blim,abserr,neval,
-     *     ier,limit,lenw, work(40000),resr,resi,zbb,bbi,limsingsm
+     *     work(40000),resr,resi,zbb,bbi,limsingsm
       double complex zaa,za,i,w
-      INTEGER n,m,np1,nu,j,l,iwork(10000)
+      INTEGER n,m,np1,nu,j,l,iwork(10000),ier
       LOGICAL A, B, FLAG
       integer nlimit,mf,nf,last,npts2,spoints(3)
-      PARAMETER (nlimit=10000,limsingsm=1.0e-8,npts2=3,
-     *     epsrel=1.0e-2,epsabs=1.0e-6)
+c      PARAMETER (nlimit=10000,limsingsm=1.0e-8,npts2=3,
+c     *     epsrel=1.0e-2,epsabs=1.0e-6)
+      PARAMETER (limsingsm=1.0e-8,npts2=3)
       double precision fpd_re,fpd_im
-      EXTERNAL DQAG, fpd_re,fpd_im,resfpd_im,resfpd_re
+      EXTERNAL fpd_re,fpd_im,resfpd_im,resfpd_re
+      external dqagi,dqagp,dqag,prerr
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       FLAG = .FALSE.
       i=cmplx(0,1)
@@ -46,29 +48,38 @@ C
       mf=m
       nf=n
       w=zbb**2/4-zaa
+      nlimit=10000
+      epsrel=1.0e-2
+      epsabs=1.0e-6
       if(dabs(dimag(w)).GT.limsingsm.OR.dble(w).LT.0) then
          alim=0.0
          CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
      *        nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
      *        nlimit,40000,last,iwork,work)
-         u=resr;
-         v=resi;
+         if(ier.ne.0) goto 100
+         u=resr
+         v=resi
       else
          alim=0.0
          blim=dsqrt(2.01*dble(w))
          spoints(1)=dsqrt(2.0*dble(w))
          CALL DQAGP(Fpd_re,alim,blim,npts2,spoints,epsabs,epsrel,resr,
      *        abserr,neval,ier,nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          CALL DQAGP(Fpd_im,alim,blim,npts2,spoints,epsabs,epsrel,resi,
      *        abserr,neval,ier,nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          u=resr;
          v=resi;
          alim=blim;
          CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
      *        nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
      *        nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          u=u+resr;
          v=v+resi;
       endif
@@ -77,8 +88,10 @@ C
          Blim=1.0
          CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
      *        neval,ier, nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          CALL DQAG(resFpd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
      *        neval,ier,nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          u=u-resr
          v=v-resi
       else if(dimag(zaa).EQ.0.AND.dble(w).GT.0) then
@@ -86,16 +99,19 @@ C
          Blim=1.0
          CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
      *        neval,ier, nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          CALL DQAG(resFpd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
      *        neval,ier,nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          u=u-0.5*resr
          v=v-0.5*resi
 c         write(*,*) u,v
       endif
-C      Write (*,*) u,v
+c      Write (*,*) u,v
       RETURN
 *
-  100 FLAG = .TRUE.
+  100 call prerr(zaa,zbb,bbi)
+      FLAG = .TRUE.
       RETURN
 *
       END
@@ -232,13 +248,22 @@ Cf2py double complex dimension(numza) :: res
       double complex za(numza),res(numza)
       integer n,m,k,numza
       logical flag
+      external inmzpd,prerr
+      double precision largestxi,largestyi,largeval
+      parameter (largestxi=1E4,largestyi=1E4,largeval=1d120)
       do 10 k=1,numza
          xi=dble(za(k))
          yi=dimag(za(k))
+         if (dabs(xi).gt.largestxi.or.dabs(yi).gt.largestyi) goto 120
          call inmzpd(xi,yi,zb,b,n,m,u,v,flag)
+         if(flag) goto 110
          res(k)=cmplx(u,v)
  10   continue
       return
+ 110  call prerr(za(k),zb,b)
+      return
+ 120  res(k)=largeval
+      continue
       end
 
 C     inm

@@ -134,7 +134,7 @@ libgpdf_a_AR = $(AR) $(ARFLAGS)
 libgpdf_a_LIBADD =
 am_libgpdf_a_OBJECTS = libgpdf_a-gpdf_inmzpd.$(OBJEXT) \
 	libgpdf_a-wofzwh.$(OBJEXT) libgpdf_a-rpolyev.$(OBJEXT) \
-	libgpdf_a-inmzpd.$(OBJEXT)
+	libgpdf_a-utils.$(OBJEXT) libgpdf_a-inmzpd.$(OBJEXT)
 libgpdf_a_OBJECTS = $(am_libgpdf_a_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_ctest_OBJECTS = ctest-ctest.$(OBJEXT)
@@ -381,7 +381,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LIBRARIES = libgpdf.a
-libgpdf_a_SOURCES = gpdf_inmzpd.c wofzwh.f rpolyev.f inmzpd.f
+libgpdf_a_SOURCES = gpdf_inmzpd.c wofzwh.f rpolyev.f utils.f inmzpd.f
 libgpdf_a_CFLAGS = -fPIC -I./
 libgpdf_a_FFLAGS = -I./ -fPIC -fimplicit-none
 libgpdf_a_INCLUDES = $(all_includes)
@@ -591,6 +591,12 @@ libgpdf_a-rpolyev.o: rpolyev.f
 
 libgpdf_a-rpolyev.obj: rpolyev.f
 	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-rpolyev.obj `if test -f 'rpolyev.f'; then $(CYGPATH_W) 'rpolyev.f'; else $(CYGPATH_W) '$(srcdir)/rpolyev.f'; fi`
+
+libgpdf_a-utils.o: utils.f
+	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-utils.o `test -f 'utils.f' || echo '$(srcdir)/'`utils.f
+
+libgpdf_a-utils.obj: utils.f
+	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-utils.obj `if test -f 'utils.f'; then $(CYGPATH_W) 'utils.f'; else $(CYGPATH_W) '$(srcdir)/utils.f'; fi`
 
 libgpdf_a-inmzpd.o: inmzpd.f
 	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-inmzpd.o `test -f 'inmzpd.f' || echo '$(srcdir)/'`inmzpd.f
