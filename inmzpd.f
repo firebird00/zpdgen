@@ -145,8 +145,9 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          Fpd=0.0
       else
          xbr=dble(bbi*2.0)**(0.5)*s
-         xbi=0.0
-         call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
+c         xbi=0.0
+c         call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
+         JR0=DBESJ0(XBR)
          Fpd=2.0*dexp(-s**2)*Jr0**2*Gm*s**nf
       endif
       return
