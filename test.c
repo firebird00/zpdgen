@@ -7,7 +7,7 @@ int main(int argc, char *argv[]){
   complex res;
   pldisp_hdf_file *outhdf;
   int lx,ly;
-  int n,m,lt,l;
+  int n,m,lt,l,k;
   complex *F;
   complex *za,om,I10,I30,I12;
   complex za_min, za_max, dza;
@@ -33,27 +33,25 @@ int main(int argc, char *argv[]){
   F=malloc(sizeof(complex)*numx*numy);
   za=malloc(sizeof(complex)*numx*numy);
   lt=0;
-  for(l=0;l<4;l++){
-    n=nms[l*2];
-    m=nms[l*2+1];
-    printf("computing I%i%i for nw=%i\n",n,m,nws[l]);
-    tc=clock();
-    for(lx=0;lx<numx;lx++){
-      for(ly=0;ly<numy;ly++){
-	za[lx*numy+ly]=za_min+creal(dza)*lx+I*cimag(dza)*ly;
-	om=za[lx*numy+ly];
-	F[lx*numy+ly]=pldisp_inmzpd(za[lx*numy+ly],0.0,0.3*0.3,n,m,nws[l]);
+  for (k=0;k<4;k++){
+    for(l=0;l<4;l++){
+      n=nms[l*2];
+      m=nms[l*2+1];
+      printf("computing I%i%i for nw=%i\n",n,m,nws[k]);
+      tc=clock();
+      for(lx=0;lx<numx;lx++){
+	for(ly=0;ly<numy;ly++){
+	  za[lx*numy+ly]=za_min+creal(dza)*lx+I*cimag(dza)*ly;
+	  om=za[lx*numy+ly];
+	  F[lx*numy+ly]=pldisp_inmzpd(za[lx*numy+ly],0.0,0.3*0.3,n,m,nws[k]);
+	}
       }
+      dt=clock()-tc;
+      dts[lt++]=dt/1.0e6;
+      printf("\n%f secs cpu time\n",dts[lt-1]);
+      sprintf(buf,"out_I%i%i.h5",n,m);
     }
-    dt=clock()-tc;
-    dts[lt++]=dt/1.0e6;
-    printf("\n%f secs cpu time\n",dts[lt-1]);
-    sprintf(buf,"out_I%i%i.h5",n,m);
   }
-
-
-
-
 	  //      F[lx*numy+ly]=pldisp_epszpd(za[lx*numy+ly],ps);
 	  //      I10=pldisp_inmzpd(om,0.0,0.3*0.3,1,0);
 	  //      I30=pldisp_inmzpd(om,0.0,0.3*0.3,3,0);
