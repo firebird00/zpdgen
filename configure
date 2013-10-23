@@ -4281,8 +4281,8 @@ $as_echo "#define ZPDGEN_DEBUG 1" >>confdefs.h
 	CFLAGS="$CFLAGS -g -O0"
 	FFLAGS="$FFLAGS -g -O0"
 else
-	CFLAGS="-O3"
-	FFLAGS="-O3"
+	CFLAGS="-Ofast"
+	FFLAGS="-Ofast"
 fi
 
 # Check whether --enable-python was given.
