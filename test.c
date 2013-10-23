@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
   za=malloc(sizeof(complex)*numx*numy);
   lt=0;
   for (k=0;k<4;k++){
-    for(l=0;l<4;l++){
+    for(l=0;l<3;l++){
       n=nms[l*2];
       m=nms[l*2+1];
       printf("computing I%i%i for nw=%i\n",n,m,nws[k]);
@@ -49,7 +49,11 @@ int main(int argc, char *argv[]){
       dt=clock()-tc;
       dts[lt++]=dt/1.0e6;
       printf("\n%f secs cpu time\n",dts[lt-1]);
-      sprintf(buf,"out_I%i%i.h5",n,m);
+      sprintf(buf,"out_I%i%i_%i.h5",n,m,nws[k]);
+      outhdf=pldisp_hdf5_create(buf);
+      pldisp_hdf5_write_complex2d("za",outhdf,za,numx,numy);
+      pldisp_hdf5_write_complex2d("eps",outhdf,F,numx,numy);
+      H5Fclose(outhdf->id);
     }
   }
 	  //      F[lx*numy+ly]=pldisp_epszpd(za[lx*numy+ly],ps);
@@ -63,10 +67,6 @@ int main(int argc, char *argv[]){
 	  //            printf("za=%f %+fI\n",creal(za[lx*numy+ly]),cimag(za[lx*numy+ly]));
 	  //            printf("F=%f %+fI\n",creal(F[lx*numy+ly]),cimag(F[lx*numy+ly]));
 
-      outhdf=pldisp_hdf5_create(buf);
-      pldisp_hdf5_write_complex2d("za",outhdf,za,numx,numy);
-      pldisp_hdf5_write_complex2d("eps",outhdf,F,numx,numy);
-      H5Fclose(outhdf->id);
 //    }
 //  }
 }

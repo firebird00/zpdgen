@@ -35,7 +35,7 @@ C
       PARAMETER (nlimit=10000,
      *     epsrel=1.0e-2,epsabs=1.0e-6,npts2=3,
      *     limsingsm=1.0e-8)
-      double precision fpd_re,fpd_im
+      double precision fpd_re,fpd_im,resfpd_re,resfpd_im
       EXTERNAL fpd_re,fpd_im,resfpd_im,resfpd_re
       external dqagi,dqagp,dqag,prerr
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
@@ -222,26 +222,20 @@ c         call zbesj(xbr,0.0,0,1,1,Jr0,Ji0,nz,ierr)
       double complex function resFpd(mu)
       double precision mu,xbr,xbi,Jr0,Ji0,zbb,bbi,sqrtpi
       integer mf,nf,ierr,nz
-      double complex zaa,i,w,xb,J0
+      double complex zaa,i,w,xb,J0,res
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       parameter (sqrtpi = 1.77245385090552)
-      xb=2.0*zsqrt(bbi*(1-mu**2)*w)
+      external zbesj
+      xb=2.0*(bbi*(1-mu**2)*w)**(0.5)
       xbr=dble(xb)
       xbi=dimag(xb)
       i=cmplx(0,1)
       call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
       J0=cmplx(Jr0,Ji0)
-      resFpd=i*2**(0.5*(nf+3))*J0**2*sqrtpi*w**(nf*0.5)*
+      res=i*2.0**(0.5*(nf+3))*J0**2*sqrtpi*w**(nf*0.5)*
      *     (1-mu**2)**((nf-1)*0.5)*(mu*zsqrt(w)+0.5*zbb)**mf*
      *     zexp(-(mu*zsqrt(w)+0.5*zbb)**2-2.0*(1.0-mu*mu)*w)
-c      resFpd=i*2**(0.5*(nf+3))*J0**2*sqrtpi*w**(nf*0.5)*
-c     *     zexp(-(mu*zsqrt(w)+0.5*zbb)**2-2.0*(1.0-mu*mu)*w)
-c      if(nf.gt.1) then
-c         resFpd=resFpd*(1-mu**2)**(0.5*(nf-1))
-c      endif
-c      if(mf.gt.0) then
-c         resFpd=resFpd*(mu*zsqrt(w)+0.5*zbb)**mf
-c      endif
+      resFpd=res
       return
       end function resFpd
 
