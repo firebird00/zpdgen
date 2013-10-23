@@ -186,7 +186,6 @@ c         call error handler if necessary.
 c
        lvl = 0
 10    if(ier.eq.6) lvl = 1
-      if(ier.ne.0) return
-c     call xerror(26habnormal return from dqagi,26,ier,lvl)
-c      return
+      if(ier.ne.0) call xerror(26habnormal return from dqagi,26,ier,lvl)
+      return
       end

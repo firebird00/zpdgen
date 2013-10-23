@@ -79,7 +79,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-noinst_PROGRAMS = ftest$(EXEEXT) ctest$(EXEEXT)
+noinst_PROGRAMS = ftest$(EXEEXT) ctest$(EXEEXT) test$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) depcomp \
@@ -145,6 +145,10 @@ am_ftest_OBJECTS = ftest-ftest.$(OBJEXT)
 ftest_OBJECTS = $(am_ftest_OBJECTS)
 ftest_LINK = $(F77LD) $(ftest_FFLAGS) $(FFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
+am_test_OBJECTS = test-test.$(OBJEXT)
+test_OBJECTS = $(am_test_OBJECTS)
+test_LINK = $(F77LD) $(test_FFLAGS) $(FFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 SCRIPTS = $(bin_SCRIPTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -190,8 +194,10 @@ AM_V_F77LD = $(am__v_F77LD_@AM_V@)
 am__v_F77LD_ = $(am__v_F77LD_@AM_DEFAULT_V@)
 am__v_F77LD_0 = @echo "  F77LD   " $@;
 am__v_F77LD_1 = 
-SOURCES = $(libgpdf_a_SOURCES) $(ctest_SOURCES) $(ftest_SOURCES)
-DIST_SOURCES = $(libgpdf_a_SOURCES) $(ctest_SOURCES) $(ftest_SOURCES)
+SOURCES = $(libgpdf_a_SOURCES) $(ctest_SOURCES) $(ftest_SOURCES) \
+	$(test_SOURCES)
+DIST_SOURCES = $(libgpdf_a_SOURCES) $(ctest_SOURCES) $(ftest_SOURCES) \
+	$(test_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -383,7 +389,7 @@ top_srcdir = @top_srcdir@
 lib_LIBRARIES = libgpdf.a
 libgpdf_a_SOURCES = gpdf_inmzpd.c wofzwh.f rpolyev.f utils.f inmzpd.f
 libgpdf_a_CFLAGS = -fPIC -I./
-libgpdf_a_FFLAGS = -I./ -fPIC -fimplicit-none
+libgpdf_a_FFLAGS = -I./ -fPIC -fimplicit-none -fbounds-check
 libgpdf_a_INCLUDES = $(all_includes)
 EXTRA_DIST = gpdf.py
 include_HEADERS = gpdf.h
@@ -393,12 +399,17 @@ ACLOCAL_AMFLAGS = -I m4
 ftest_SOURCES = ftest.f
 ftest_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
 ftest_CFLAGS = -I./
-ftest_FFLAGS = -I./ -fimplicit-none
+ftest_FFLAGS = -I./ -fPIC -fimplicit-none -fbounds-check
 ftest_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
+test_SOURCES = test.f
+test_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
+test_CFLAGS = -I./
+test_FFLAGS = -I./ -fPIC -fimplicit-none -fbounds-check
+test_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
 ctest_SOURCES = ctest.c
 ctest_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
 ctest_CFLAGS = -I./
-ctest_FFLAGS = -I./ -fimplicit-none
+ctest_FFLAGS = -I./ -fPIC -fimplicit-none -fbounds-check
 ctest_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
 @ZPDGEN_PYTHON_ON_TRUE@bin_SCRIPTS = inmzpd.pyf
 CLEANFILES = $(bin_SCRIPTS) *.so
@@ -487,6 +498,10 @@ ctest$(EXEEXT): $(ctest_OBJECTS) $(ctest_DEPENDENCIES) $(EXTRA_ctest_DEPENDENCIE
 ftest$(EXEEXT): $(ftest_OBJECTS) $(ftest_DEPENDENCIES) $(EXTRA_ftest_DEPENDENCIES) 
 	@rm -f ftest$(EXEEXT)
 	$(AM_V_F77LD)$(ftest_LINK) $(ftest_OBJECTS) $(ftest_LDADD) $(LIBS)
+
+test$(EXEEXT): $(test_OBJECTS) $(test_DEPENDENCIES) $(EXTRA_test_DEPENDENCIES) 
+	@rm -f test$(EXEEXT)
+	$(AM_V_F77LD)$(test_LINK) $(test_OBJECTS) $(test_LDADD) $(LIBS)
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
 	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
@@ -609,6 +624,12 @@ ftest-ftest.o: ftest.f
 
 ftest-ftest.obj: ftest.f
 	$(AM_V_F77)$(F77) $(ftest_FFLAGS) $(FFLAGS) -c -o ftest-ftest.obj `if test -f 'ftest.f'; then $(CYGPATH_W) 'ftest.f'; else $(CYGPATH_W) '$(srcdir)/ftest.f'; fi`
+
+test-test.o: test.f
+	$(AM_V_F77)$(F77) $(test_FFLAGS) $(FFLAGS) -c -o test-test.o `test -f 'test.f' || echo '$(srcdir)/'`test.f
+
+test-test.obj: test.f
+	$(AM_V_F77)$(F77) $(test_FFLAGS) $(FFLAGS) -c -o test-test.obj `if test -f 'test.f'; then $(CYGPATH_W) 'test.f'; else $(CYGPATH_W) '$(srcdir)/test.f'; fi`
 install-includeHEADERS: $(include_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(include_HEADERS)'; test -n "$(includedir)" || list=; \

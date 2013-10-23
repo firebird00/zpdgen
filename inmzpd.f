@@ -26,10 +26,10 @@ C
 
       implicit none
       DOUBLE PRECISION xi,yi,bi,zb,z1,z2,u,v, 
-     *     epsabs,epsrel,alim,blim,abserr,neval,
+     *     epsabs,epsrel,alim,blim,abserr,
      *     work(40000),resr,resi,zbb,bbi,limsingsm
       double complex zaa,za,i,w
-      INTEGER n,m,np1,nu,j,l,iwork(10000),ier
+      INTEGER n,m,np1,nu,j,l,iwork(10000),ier,neval
       LOGICAL A, B, FLAG
       integer nlimit,mf,nf,last,npts2,spoints(3)
 c      PARAMETER (nlimit=10000,limsingsm=1.0e-8,npts2=3,
@@ -51,6 +51,7 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       nlimit=10000
       epsrel=1.0e-2
       epsabs=1.0e-6
+      ier=0
       if(dabs(dimag(w)).GT.limsingsm.OR.dble(w).LT.0) then
          alim=0.0
          CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
@@ -105,13 +106,11 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          if(ier.ne.0) goto 100
          u=u-0.5*resr
          v=v-0.5*resi
-c         write(*,*) u,v
       endif
-c      Write (*,*) u,v
       RETURN
 *
-  100 call prerr(zaa,zbb,bbi)
-      FLAG = .TRUE.
+ 100  FLAG = .TRUE.
+      call prerr(zaa,zbb,bbi)
       RETURN
 *
       END
@@ -133,11 +132,11 @@ c      Write (*,*) u,v
       end function Fpd_im
 
       double complex function Fpd(s)
-      double precision s,limsingsm,xbr,Jr0,Ji0,zbb,bbi
+      double precision s,limsingsm,xbr,Jr0,Ji0,zbb,bbi,xbi
       integer mf,nf,ierr,nz
       double complex z1,z2,zaa,Gm,weidGm,w
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
-      external weidGm
+      external weidGm,zbesj
       parameter (limsingsm = 1.0e-8)
       z1=0.5*(zbb+zsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
       z2=0.5*(zbb-zsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
@@ -146,9 +145,10 @@ c      Write (*,*) u,v
          Fpd=0.0
       else
          xbr=dble(bbi*2.0)**(0.5)*s
-         call zbesj(xbr,0.0,0,1,1,Jr0,Ji0,nz,ierr)
+         xbi=0.0
+         call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
          Fpd=2.0*dexp(-s**2)*Jr0**2*Gm*s**nf
-      end if
+      endif
       return
       end function Fpd
 
@@ -165,11 +165,11 @@ c      Write (*,*) u,v
          else
             if (m.eq.0) then
                weidGm=-2*weidZm(z1,m+1)
-            end if
-         end if
+            endif
+         endif
       else
          weidGm=(weidZm(z1,m)-weidZm(z2,m))/(z1-z2)
-      end if
+      endif
       return
       end function weidGm
 
@@ -189,7 +189,7 @@ c      Write (*,*) u,v
          do 20 k=1,m
             weidZm=weidZm+1.0/sqrtpi*dgamma((m-k+1)*0.5d0)*z**(k-1)
  20      continue
-      end if 
+      endif 
       return
       end function weidZm
 

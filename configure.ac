@@ -23,8 +23,8 @@ if test "$ok" = "yes"; then
 	CFLAGS="$CFLAGS -g -O0"
 	FFLAGS="$FFLAGS -g -O0"
 else
-	CFLAGS="-O3 -funroll-loops"
-	FFLAGS="-O3 -funroll-loops"
+	CFLAGS="-O3"
+	FFLAGS="-O3"
 fi
 
 AC_ARG_ENABLE(python, AC_HELP_STRING([--enable-python],[enables python wrappers]), ok=$enableval, ok=no)
