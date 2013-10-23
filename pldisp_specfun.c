@@ -4,13 +4,14 @@
 #include "gpdf.h"
 
 extern void wofzh_(double*, double*, double*, double*, int*);
-extern void wofzwh_(double*, double*, double*, double*, int*);
+//extern void wofzwh_(double*, double*, double*, double*, int*);
 extern void zbesj_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
 extern void zbesi_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
 extern void zbesk_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
 extern void inmzpd_(double*, double*, double*,double *, int*, int*, int *, double*, double*, int*);
 extern void inmkur_(double*, double*, double*,double *, int*, int*, double*, double*, int*);
 extern void epszpd_(double*, double*, double*, int *, double*, double*, int*);
+extern void epskur_(double*, double*, double*, double*, double*, int*);
 extern void zgeev_( char* jobvl, char* jobvr, int* n, complex* a,
 		    int* lda, complex* w, complex* vl, int* ldvl, complex* vr, int* ldvr,
 		    complex* work, int* lwork, double* rwork, int* info );
@@ -72,6 +73,24 @@ complex pldisp_epszpd(complex om, pldisp_eps_pars *pars,int nw){
   return res;
 }
 
+complex pldisp_epskur(complex om, pldisp_eps_pars *pars){
+  complex res;
+  double zr=creal(om);
+  double zi=cimag(om);
+  double *cyr=malloc(sizeof(double)*1);
+  double *cyi=malloc(sizeof(double)*1);
+  int *flag=malloc(sizeof(int)*1);
+  epskur_(&zr,&zi, (double *)pars, cyr,cyi,flag);
+  if(flag[0]!=0){
+    printf("error in epskur!\n");
+    printf("om=(%f,%f)\n",creal(om),cimag(om));
+    exit(-1);
+  }
+  res=cyr[0]+I*cyi[0];
+  free(cyr);
+  free(cyi);
+  return res;
+}
 complex pldisp_wofzh(complex z){
   complex res;
   double zr=creal(z);
@@ -90,7 +109,7 @@ complex pldisp_wofzh(complex z){
   free(cyi);
   return res;
 }
-
+/*
 complex pldisp_wofzwh(complex z){
   complex res;
   double zr=creal(z);
@@ -108,7 +127,8 @@ complex pldisp_wofzwh(complex z){
   free(cyr);
   free(cyi);
   return res;
-}
+  }
+*/
 
 /*this is an interface to Amos' complex Bessel function implementation in fortran*/
 complex pldisp_besselj(double nu, complex z){

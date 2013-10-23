@@ -6,9 +6,9 @@
       external inmzpd
       external epszpd
       external epskur
-      integer n,m,numx,numy,lx,ly,k,ns(3,2),numt,nws(4),nw,l
+      integer n,m,numx,numy,lx,ly,k,ns(3,2),numt,nws(4),nw,l,lt
       logical flag
-      real finish,start
+      real finish,start,dt(25)
       data ns/1,1,3,0,2,0/
       data nws/1,4,8,16/
       i=cmplx(0,1)
@@ -26,7 +26,7 @@
       kpar=0.0
       pars=(/omdi,etai,tau,ky,kpar/)
       omsi=-ky
-
+      lt=1
       do 50 l=1,4
          nw=nws(l)
          do 20 k=1,5
@@ -69,6 +69,8 @@
                   endif
  10       continue
           call cpu_time(finish)
+          dt(lt)=finish-start
+          lt=lt+1
           print '("Time = ",f12.6," seconds.")',finish-start
  20    continue
  50    continue
@@ -112,7 +114,9 @@
                endif
  30         continue
       call cpu_time(finish)
-      print '("Time = ",f12.6," seconds.")',finish-start
+      dt(lt)=finish-start
+      lt=lt+1
+      print '("Time = ",f12.6," seconds.")',lt
  40         continue
       stop
       end

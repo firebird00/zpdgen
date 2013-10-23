@@ -79,7 +79,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-noinst_PROGRAMS = timetest$(EXEEXT)
+noinst_PROGRAMS = timetest$(EXEEXT) test$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) depcomp \
@@ -140,6 +140,10 @@ am_libgpdf_a_OBJECTS = libgpdf_a-pldisp_utils.$(OBJEXT) \
 	libgpdf_a-inmkur.$(OBJEXT) libgpdf_a-utils.$(OBJEXT)
 libgpdf_a_OBJECTS = $(am_libgpdf_a_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
+am_test_OBJECTS = test-test.$(OBJEXT)
+test_OBJECTS = $(am_test_OBJECTS)
+test_LINK = $(CCLD) $(test_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
+	-o $@
 am_timetest_OBJECTS = timetest-timetest.$(OBJEXT)
 timetest_OBJECTS = $(am_timetest_OBJECTS)
 timetest_LINK = $(F77LD) $(timetest_FFLAGS) $(FFLAGS) $(AM_LDFLAGS) \
@@ -189,8 +193,9 @@ AM_V_F77LD = $(am__v_F77LD_@AM_V@)
 am__v_F77LD_ = $(am__v_F77LD_@AM_DEFAULT_V@)
 am__v_F77LD_0 = @echo "  F77LD   " $@;
 am__v_F77LD_1 = 
-SOURCES = $(libgpdf_a_SOURCES) $(timetest_SOURCES)
-DIST_SOURCES = $(libgpdf_a_SOURCES) $(timetest_SOURCES)
+SOURCES = $(libgpdf_a_SOURCES) $(test_SOURCES) $(timetest_SOURCES)
+DIST_SOURCES = $(libgpdf_a_SOURCES) $(test_SOURCES) \
+	$(timetest_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -394,6 +399,11 @@ timetest_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
 timetest_CFLAGS = -I./
 timetest_FFLAGS = -I./ -fimplicit-none
 timetest_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
+test_SOURCES = test.c
+test_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
+test_CFLAGS = -I./
+test_FFLAGS = -I./ -fimplicit-none
+test_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
 @ZPDGEN_PYTHON_ON_TRUE@bin_SCRIPTS = inmzpd.pyf
 CLEANFILES = $(bin_SCRIPTS) *.so
 all: all-recursive
@@ -474,6 +484,10 @@ libgpdf.a: $(libgpdf_a_OBJECTS) $(libgpdf_a_DEPENDENCIES) $(EXTRA_libgpdf_a_DEPE
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
 
+test$(EXEEXT): $(test_OBJECTS) $(test_DEPENDENCIES) $(EXTRA_test_DEPENDENCIES) 
+	@rm -f test$(EXEEXT)
+	$(AM_V_CCLD)$(test_LINK) $(test_OBJECTS) $(test_LDADD) $(LIBS)
+
 timetest$(EXEEXT): $(timetest_OBJECTS) $(timetest_DEPENDENCIES) $(EXTRA_timetest_DEPENDENCIES) 
 	@rm -f timetest$(EXEEXT)
 	$(AM_V_F77LD)$(timetest_LINK) $(timetest_OBJECTS) $(timetest_LDADD) $(LIBS)
@@ -521,6 +535,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgpdf_a-pldisp_specfun.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libgpdf_a-pldisp_utils.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-test.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -563,6 +578,20 @@ libgpdf_a-pldisp_specfun.obj: pldisp_specfun.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pldisp_specfun.c' object='libgpdf_a-pldisp_specfun.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libgpdf_a_CFLAGS) $(CFLAGS) -c -o libgpdf_a-pldisp_specfun.obj `if test -f 'pldisp_specfun.c'; then $(CYGPATH_W) 'pldisp_specfun.c'; else $(CYGPATH_W) '$(srcdir)/pldisp_specfun.c'; fi`
+
+test-test.o: test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -MT test-test.o -MD -MP -MF $(DEPDIR)/test-test.Tpo -c -o test-test.o `test -f 'test.c' || echo '$(srcdir)/'`test.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test.Tpo $(DEPDIR)/test-test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test.c' object='test-test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -c -o test-test.o `test -f 'test.c' || echo '$(srcdir)/'`test.c
+
+test-test.obj: test.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -MT test-test.obj -MD -MP -MF $(DEPDIR)/test-test.Tpo -c -o test-test.obj `if test -f 'test.c'; then $(CYGPATH_W) 'test.c'; else $(CYGPATH_W) '$(srcdir)/test.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/test-test.Tpo $(DEPDIR)/test-test.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='test.c' object='test-test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(test_CFLAGS) $(CFLAGS) -c -o test-test.obj `if test -f 'test.c'; then $(CYGPATH_W) 'test.c'; else $(CYGPATH_W) '$(srcdir)/test.c'; fi`
 
 .f.o:
 	$(AM_V_F77)$(F77COMPILE) -c -o $@ $<

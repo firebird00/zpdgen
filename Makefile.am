@@ -9,13 +9,20 @@ noinst_HEADERS=doxy.cfg
 SUBDIRS = amos quadp
 ACLOCAL_AMFLAGS = -I m4
 
-noinst_PROGRAMS = timetest
+noinst_PROGRAMS = timetest test
 
 timetest_SOURCES = timetest.f
 timetest_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
 timetest_CFLAGS = -I./
 timetest_FFLAGS = -I./ -fimplicit-none
 timetest_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
+
+test_SOURCES = test.c
+test_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
+test_CFLAGS = -I./
+test_FFLAGS = -I./ -fimplicit-none
+test_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
+
 if ZPDGEN_PYTHON_ON
 bin_SCRIPTS=inmzpd.pyf
 endif

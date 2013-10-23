@@ -49,6 +49,8 @@ complex pldisp_inmzpd(complex za, double zb, double bi, int n, int m, int nw);
 complex pldisp_inmkur(complex za, double zb, double bi, int n, int m);
 ///the epszpd
 complex pldisp_epszpd(complex om,pldisp_eps_pars *ps, int nw);
+///the epskur
+complex pldisp_epskur(complex om,pldisp_eps_pars *ps);
 /// utility function used to compute elapsed time.
 unsigned long int pldisp_time();
 
