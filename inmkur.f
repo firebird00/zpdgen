@@ -11,7 +11,7 @@
       logical flag
       common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
       PARAMETER (MINOMDLIM = -1e-6,
-     *     nlimit=10000,
+     *     nlimit=10000,epsrel=1.0e-2,epsabs=1.0e-6,
      *     sqrttwo =1.414213562373095 )
       FLAG=.FALSE.
       om=cmplx(omr,omi)
@@ -27,18 +27,20 @@
          w=zbb**2/4-zaa
          bbi=ky**2;
          omsi=-ky;
-         epsrel = 1.0e-2
-         epsabs = 1.0e-6
          Alim=-1.0
          Blim=1.0
          CALL DQAG(Fepskur_re,alim,blim,epsabs,epsrel,6,resr,abserr,
      *        neval,ier, nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          CALL DQAG(Fepskur_im,alim,blim,epsabs,epsrel,6,resi,abserr,
      *        neval,ier, nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          u=resr+1.0+1.0/tau;
          v=resi;
       endif
-
+      RETURN
+ 100  FLAG = .TRUE.
+      call prerr(zaa,zbb,bbi)
       RETURN
       end subroutine epskur
 

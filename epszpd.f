@@ -18,16 +18,15 @@ C
 C
       implicit none
       DOUBLE PRECISION omr,omi,ky,kpar,omdi,etai,u,v,
-     *     qrho, rx,ry,sx,sy,tx,ty, u1, u2, v1,v2,xabsq,xaux,xquad,xsum,
-     *     yquad, ysum,epsabs,epsrel,alim,blim,key,result,abserr,
-     *     limit,lenw, work(40000),resr,resi,zbb,bbi,minomdlim,tau,
+     *     epsabs,epsrel,alim,blim,abserr,
+     *     work(40000),resr,resi,zbb,bbi,minomdlim,tau,
      *     pars(5),sqrttwo,omsi
       double complex zaa,i,w,om
-      INTEGER n,m,np1,nu,j,l,iwork(10000)
+      INTEGER n,m,np1,nu,j,l,iwork(10000),limit
       LOGICAL A, B, FLAG
       integer nlimit,mf,nf,last,neval,ier,nw,nweid
       PARAMETER (MINOMDLIM = -1e-6,
-     *     nlimit=10000,
+     *     nlimit=10000,epsrel=1.0e-2,epsabs=1.0e-6,
      *     sqrttwo =1.414213562373095 )
       double precision fpd_re,fpd_im
       EXTERNAL DQAG, fepspd_re,fepspd_im,resfepspd_im,resfepspd_re
@@ -43,27 +42,18 @@ C
       kpar=pars(5)
       nweid=nw
       if(omdi.LT.MINOMDLIM) then
-         zaa=-0.5*cmplx(omr,omi)/omdi
-         zbb=kpar/sqrttwo/omdi
+         zaa=-cmplx(omr,omi)/omdi
+         zbb=kpar*sqrttwo/omdi
          w=zbb**2/4-zaa
          bbi=ky**2;
          omsi=-ky;
-         epsrel = 1.0e-2
-         epsabs = 1.0e-6
          Alim=0.0
-         Blim=24.0
          CALL DQAGI(Fepspd_re,alim,1,epsabs,epsrel,resr,abserr,neval,
      *        ier,nlimit,40000,last,iwork,work)
-         
+         if(ier.ne.0) goto 100
          CALL DQAGI(Fepspd_im,alim,1,epsabs,epsrel,resi,abserr,neval,
      *        ier,nlimit,40000,last,iwork,work)
-
-C         CALL DQAG(Fepspd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
-C     *        neval,ier,nlimit,40000,last,iwork,work)
-         
-C         CALL DQAG(Fepspd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
-C     *        neval,ier,nlimit,40000,last,iwork,work)
-         
+         if(ier.ne.0) goto 100
          u=resr+1.0+1.0/tau;
          v=resi;
       end if
@@ -73,20 +63,12 @@ C     *        neval,ier,nlimit,40000,last,iwork,work)
          Blim=1.0
          CALL DQAG(resFepspd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
      *        neval,ier, nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          CALL DQAG(resFepspd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
      *        neval,ier,nlimit,40000,last,iwork,work)
+         if(ier.ne.0) goto 100
          u=u-resr
          v=v-resi
-c      Write (*,*) resr,resi
-c      else if(omi.EQ.0.AND.omr.LT.0) then
-c         Alim=-1.0
-c         Blim=1.0
-c         CALL DQAG(resFepspd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
-c     *        neval,ier, nlimit,40000,last,iwork,work)
-c         CALL DQAG(resFepspd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
-c     *        neval,ier,nlimit,40000,last,iwork,work)
-c         u=u+resr*0.5
-c         v=v+resi*0.5
       endif
       RETURN
 *
@@ -127,8 +109,9 @@ c         v=v+resi*0.5
          G0=weidGm(z1,z2,0)
          G2=weidGm(z1,z2,2)
          xbr=dsqrt(bbi*2.0)*s
-         call zbesj(xbr,0.0,0,1,1,Jr0,Ji0,nz,ierr)
-         Fepspd=1.0d0/omdi*
+         jr0=dbesj0(xbr)
+c         call zbesj(xbr,0.0,0,1,1,Jr0,Ji0,nz,ierr)
+         Fepspd=2.0d0/omdi*
      *        Jr0**2*dexp(-s**2)*(
      *        (om-omsi*(1.0+(s**2-1.5)*etai))*G0-omsi*etai*G2
      *        )*s
@@ -165,13 +148,9 @@ c         v=v+resi*0.5
       i=cmplx(0,1)
       call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
       J0=cmplx(Jr0,Ji0)
-      resFepspd=i*2.0*J0**2*sqrtpi/omdi*zsqrt(w)*
+      resFepspd=i*4.0*J0**2*sqrtpi/omdi*zsqrt(w)*
      *     zexp(-(mu*zsqrt(w)+0.5*zbb)**2-2.0*(1.0-mu**2)*w)*
      *     (om-omsi*(1.0+etai*(2.0*w*(1-mu**2)
      *     +(mu*zsqrt(w)+0.5*zbb)**2-1.5)))
-c      resFepspd=i*2.0d0*J0**2*sqrtpi/omdi*zsqrt(w)*
-c     *     zexp(-(mu*zsqrt(w)+0.5*zbb)**2-2.0d0*(1.0d0-mu**2)*w)*
-c     *     (om-omsi*(1.0+etai*((mu*zsqrt(w)+0.5*zbb)**2
-c     *     +2.0*(1.0-mu**2)*w-1.5)))
       return
       end function resFepspd

@@ -23,8 +23,8 @@ if test "$ok" = "yes"; then
 	CFLAGS="$CFLAGS -g -O0"
 	FFLAGS="$FFLAGS -g -O0"
 else
-	CFLAGS="-O3 -funroll-loops"
-	FFLAGS="-O3 -funroll-loops"
+	CFLAGS="-Ofast -funroll-loops"
+	FFLAGS="-Ofast -funroll-loops"
 fi
 
 AC_ARG_ENABLE(python, AC_HELP_STRING([--enable-python],[enables python wrappers]), ok=$enableval, ok=no)
@@ -71,15 +71,6 @@ AC_CHECK_LIB([gfortran],[main],[],[echo "Error! You need gfortran runtime librar
                         echo  "see http://gcc.gnu.org/fortran/"
                         exit -1
                         ])
-
-# check for MPI stuff
-#  if test -z "$CC" && test -n "$MPICC"; then
-#     CC="$MPICC"
-#  fi
-#  AC_PROG_CC
-#  AX_MPI
-#  CC="$MPICC"
-#  LIBS="$MPILIBS $LIBS"
 
 # Checks for header files.
 AC_HEADER_STDC

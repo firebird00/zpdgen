@@ -59,8 +59,8 @@
                      i12=cmplx(u,v)
                      call inmzpd(xi,yi,zb,b,3,0,nw,u,v,flag)
                      i30=cmplx(u,v)
-                     om=-2*za*omdi
-                     ttf(lx+1,ly+1)=1.0+1.0/tau+0.5/omdi*(
+                     om=-za*omdi
+                     ttf(lx+1,ly+1)=1.0+1.0/tau+1.0/omdi*(
      *                    i10*(om-omsi*(1.0-1.5*etai))
      *                    -omsi*etai*(i30+i12))
                   else if (k.EQ.5) then

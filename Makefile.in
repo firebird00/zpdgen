@@ -83,8 +83,8 @@ noinst_PROGRAMS = timetest$(EXEEXT)
 subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) depcomp \
-	$(include_HEADERS) $(noinst_HEADERS) COPYING INSTALL README \
-	ar-lib compile install-sh missing
+	$(include_HEADERS) $(noinst_HEADERS) COPYING INSTALL ar-lib \
+	compile install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/am-check-pymod.m4 \
 	$(top_srcdir)/configure.ac
@@ -137,7 +137,7 @@ am_libgpdf_a_OBJECTS = libgpdf_a-pldisp_utils.$(OBJEXT) \
 	libgpdf_a-wofzwh16.$(OBJEXT) libgpdf_a-wofzwh8.$(OBJEXT) \
 	libgpdf_a-wofzwh4.$(OBJEXT) libgpdf_a-rpolyev.$(OBJEXT) \
 	libgpdf_a-inmzpd.$(OBJEXT) libgpdf_a-epszpd.$(OBJEXT) \
-	libgpdf_a-inmkur.$(OBJEXT)
+	libgpdf_a-inmkur.$(OBJEXT) libgpdf_a-utils.$(OBJEXT)
 libgpdf_a_OBJECTS = $(am_libgpdf_a_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_timetest_OBJECTS = timetest-timetest.$(OBJEXT)
@@ -380,7 +380,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LIBRARIES = libgpdf.a
-libgpdf_a_SOURCES = pldisp_utils.c pldisp_specfun.c wofzh.f wofzwh16.f wofzwh8.f wofzwh4.f rpolyev.f inmzpd.f epszpd.f inmkur.f
+libgpdf_a_SOURCES = pldisp_utils.c pldisp_specfun.c wofzh.f wofzwh16.f wofzwh8.f wofzwh4.f rpolyev.f inmzpd.f epszpd.f inmkur.f utils.f
 libgpdf_a_CFLAGS = -DH5_USE_18_API -fPIC -I./
 libgpdf_a_FFLAGS = -I./ -fPIC -fimplicit-none
 libgpdf_a_INCLUDES = $(all_includes)
@@ -617,6 +617,12 @@ libgpdf_a-inmkur.o: inmkur.f
 
 libgpdf_a-inmkur.obj: inmkur.f
 	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-inmkur.obj `if test -f 'inmkur.f'; then $(CYGPATH_W) 'inmkur.f'; else $(CYGPATH_W) '$(srcdir)/inmkur.f'; fi`
+
+libgpdf_a-utils.o: utils.f
+	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-utils.o `test -f 'utils.f' || echo '$(srcdir)/'`utils.f
+
+libgpdf_a-utils.obj: utils.f
+	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-utils.obj `if test -f 'utils.f'; then $(CYGPATH_W) 'utils.f'; else $(CYGPATH_W) '$(srcdir)/utils.f'; fi`
 
 timetest-timetest.o: timetest.f
 	$(AM_V_F77)$(F77) $(timetest_FFLAGS) $(FFLAGS) -c -o timetest-timetest.o `test -f 'timetest.f' || echo '$(srcdir)/'`timetest.f

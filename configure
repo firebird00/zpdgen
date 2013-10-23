@@ -4281,8 +4281,8 @@ $as_echo "#define ZPDGEN_DEBUG 1" >>confdefs.h
 	CFLAGS="$CFLAGS -g -O0"
 	FFLAGS="$FFLAGS -g -O0"
 else
-	CFLAGS="-O3 -funroll-loops"
-	FFLAGS="-O3 -funroll-loops"
+	CFLAGS="-Ofast -funroll-loops"
+	FFLAGS="-Ofast -funroll-loops"
 fi
 
 # Check whether --enable-python was given.
@@ -4795,15 +4795,6 @@ else
 
 fi
 
-
-# check for MPI stuff
-#  if test -z "$CC" && test -n "$MPICC"; then
-#     CC="$MPICC"
-#  fi
-#  AC_PROG_CC
-#  AX_MPI
-#  CC="$MPICC"
-#  LIBS="$MPILIBS $LIBS"
 
 # Checks for header files.
 ac_ext=c

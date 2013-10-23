@@ -1,5 +1,5 @@
 lib_LIBRARIES = libgpdf.a
-libgpdf_a_SOURCES = pldisp_utils.c pldisp_specfun.c wofzh.f wofzwh16.f wofzwh8.f wofzwh4.f rpolyev.f inmzpd.f epszpd.f inmkur.f
+libgpdf_a_SOURCES = pldisp_utils.c pldisp_specfun.c wofzh.f wofzwh16.f wofzwh8.f wofzwh4.f rpolyev.f inmzpd.f epszpd.f inmkur.f utils.f
 libgpdf_a_CFLAGS = -DH5_USE_18_API -fPIC -I./
 libgpdf_a_FFLAGS = -I./ -fPIC -fimplicit-none
 libgpdf_a_INCLUDES=$(all_includes)
