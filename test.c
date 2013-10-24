@@ -5,7 +5,7 @@
 int main(int argc, char *argv[]){
   unsigned long int t,tc,dt;
   complex res;
-  pldisp_hdf_file *outhdf;
+  pldisp_hdf_file *outhdf,*outhdf2;
   int lx,ly;
   int n,m,lt,l,k;
   complex *F;
@@ -56,11 +56,52 @@ int main(int argc, char *argv[]){
       H5Fclose(outhdf->id);
     }
   }
-	  //      F[lx*numy+ly]=pldisp_epszpd(za[lx*numy+ly],ps);
-	  //      I10=pldisp_inmzpd(om,0.0,0.3*0.3,1,0);
-	  //      I30=pldisp_inmzpd(om,0.0,0.3*0.3,3,0);
-	  //      I12=pldisp_inmzpd(om,0.0,0.3*0.3,1,2);
-	  //      F[lx*numy+ly]=1.0+1.0/ps->tau+0.5/ps->omdi*((om-omsi*(1.0-1.5*ps->etai))*I10-omsi*ps->etai*(I30+I12));
+
+  for (k=0;k<4;k++){
+    printf("computing eps for nw=%i\n",n,m,nws[k]);
+    tc=clock();
+    for(lx=0;lx<numx;lx++){
+      for(ly=0;ly<numy;ly++){
+	za[lx*numy+ly]=za_min+creal(dza)*lx+I*cimag(dza)*ly;
+	om=za[lx*numy+ly];
+	I10=pldisp_inmzpd(om,0.0,0.3*0.3,1,0,nws[k]);
+	I30=pldisp_inmzpd(om,0.0,0.3*0.3,3,0,nws[k]);
+	I12=pldisp_inmzpd(om,0.0,0.3*0.3,1,2,nws[k]);
+	F[lx*numy+ly]=1.0+1.0/ps->tau+1.0/ps->omdi*((om-omsi*(1.0-1.5*ps->etai))*I10-omsi*ps->etai*(I30+I12));
+      }
+    }
+    dt=clock()-tc;
+    dts[lt++]=dt/1.0e6;
+    printf("\n%f secs cpu time\n",dts[lt-1]);
+    sprintf(buf,"out_eps_%i.h5",nws[k]);
+    outhdf=pldisp_hdf5_create(buf);
+    pldisp_hdf5_write_complex2d("za",outhdf,za,numx,numy);
+    pldisp_hdf5_write_complex2d("eps",outhdf,F,numx,numy);
+    H5Fclose(outhdf->id);
+  }
+  for (k=0;k<4;k++){
+    printf("computing eps (combined) for nw=%i\n",n,m,nws[k]);
+    tc=clock();
+    for(lx=0;lx<numx;lx++){
+      for(ly=0;ly<numy;ly++){
+	za[lx*numy+ly]=za_min+creal(dza)*lx+I*cimag(dza)*ly;
+	om=za[lx*numy+ly];
+	F[lx*numy+ly]=pldisp_epszpd(za[lx*numy+ly],ps,nws[k]);
+      }
+    }
+    dt=clock()-tc;
+    dts[lt++]=dt/1.0e6;
+    printf("\n%f secs cpu time\n",dts[lt-1]);
+    sprintf(buf,"out_epsc_%i.h5",nws[k]);
+    outhdf=pldisp_hdf5_create(buf);
+    pldisp_hdf5_write_complex2d("za",outhdf,za,numx,numy);
+    pldisp_hdf5_write_complex2d("eps",outhdf,F,numx,numy);
+    H5Fclose(outhdf->id);
+  }
+
+  outhdf2=pldisp_hdf5_create("time.h5");
+  pldisp_hdf5_write_double1d("t",outhdf2,&dts[0],25);
+  H5Fclose(outhdf2->id);
 	  //      F[lx*numy+ly]=I12;
 	  //0.5/ps->omdi*((om-omsi*(1.0-1.5*ps->etai))*I10-omsi*ps->etai*(I30+I12));
 	  //      F[lx*numy+ly]=pldisp_inmkur(za[lx*numy+ly],0.0,0.3*0.3,3,0);
