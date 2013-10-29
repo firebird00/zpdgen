@@ -1,5 +1,6 @@
 from numpy import reshape,shape,transpose
 from inmzpd import inmweid
+from epszpd import epsweid
 
 def Inm(za,zb,b,n,m):
     res=inmweid(za,zb,b,n,m)
@@ -7,6 +8,15 @@ def Inm(za,zb,b,n,m):
         res=res[0]
         return res
     res=reshape(res,shape(transpose(za)))
+    res=transpose(res)
+    return res
+
+def epsitg(om,pars):
+    res=epsweid(om,pars)
+    if (shape(om) ==()):
+        res=res[0]
+        return res
+    res=reshape(res,shape(transpose(om)))
     res=transpose(res)
     return res
 

@@ -134,7 +134,8 @@ libgpdf_a_AR = $(AR) $(ARFLAGS)
 libgpdf_a_LIBADD =
 am_libgpdf_a_OBJECTS = libgpdf_a-gpdf_inmzpd.$(OBJEXT) \
 	libgpdf_a-wofzwh.$(OBJEXT) libgpdf_a-rpolyev.$(OBJEXT) \
-	libgpdf_a-utils.$(OBJEXT) libgpdf_a-inmzpd.$(OBJEXT)
+	libgpdf_a-utils.$(OBJEXT) libgpdf_a-inmzpd.$(OBJEXT) \
+	libgpdf_a-epszpd.$(OBJEXT)
 libgpdf_a_OBJECTS = $(am_libgpdf_a_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_ctest_OBJECTS = ctest-ctest.$(OBJEXT)
@@ -387,7 +388,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LIBRARIES = libgpdf.a
-libgpdf_a_SOURCES = gpdf_inmzpd.c wofzwh.f rpolyev.f utils.f inmzpd.f
+libgpdf_a_SOURCES = gpdf_inmzpd.c wofzwh.f rpolyev.f utils.f inmzpd.f epszpd.f
 libgpdf_a_CFLAGS = -fPIC -I./
 libgpdf_a_FFLAGS = -I./ -fPIC -fimplicit-none -fbounds-check
 libgpdf_a_INCLUDES = $(all_includes)
@@ -411,7 +412,7 @@ ctest_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
 ctest_CFLAGS = -I./
 ctest_FFLAGS = -I./ -fPIC -fimplicit-none -fbounds-check
 ctest_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
-@ZPDGEN_PYTHON_ON_TRUE@bin_SCRIPTS = inmzpd.pyf
+@ZPDGEN_PYTHON_ON_TRUE@bin_SCRIPTS = inmzpd.pyf epszpd.pyf
 CLEANFILES = $(bin_SCRIPTS) *.so
 all: all-recursive
 
@@ -618,6 +619,12 @@ libgpdf_a-inmzpd.o: inmzpd.f
 
 libgpdf_a-inmzpd.obj: inmzpd.f
 	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-inmzpd.obj `if test -f 'inmzpd.f'; then $(CYGPATH_W) 'inmzpd.f'; else $(CYGPATH_W) '$(srcdir)/inmzpd.f'; fi`
+
+libgpdf_a-epszpd.o: epszpd.f
+	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-epszpd.o `test -f 'epszpd.f' || echo '$(srcdir)/'`epszpd.f
+
+libgpdf_a-epszpd.obj: epszpd.f
+	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-epszpd.obj `if test -f 'epszpd.f'; then $(CYGPATH_W) 'epszpd.f'; else $(CYGPATH_W) '$(srcdir)/epszpd.f'; fi`
 
 ftest-ftest.o: ftest.f
 	$(AM_V_F77)$(F77) $(ftest_FFLAGS) $(FFLAGS) -c -o ftest-ftest.o `test -f 'ftest.f' || echo '$(srcdir)/'`ftest.f
@@ -1079,11 +1086,18 @@ uninstall-am: uninstall-binSCRIPTS uninstall-includeHEADERS \
 	uninstall-am uninstall-binSCRIPTS uninstall-includeHEADERS \
 	uninstall-libLIBRARIES
 
+
 inmzpd.pyf: inmzpd.f Makefile.am
 	$(F2PY) --overwrite-signature -m inmzpd -h inmzpd.pyf only : inmweid : inmzpd.f
 	sed 's/:: res/,intent(out) :: res/' <inmzpd.pyf | sed 's/:: za/, intent(in) :: za/'| sed 's/:: b/, intent(in) :: b/'| sed 's/:: zb/, intent(in) :: zb/'| sed 's/:: n/, intent(in) :: n/'| sed 's/:: m/, intent(in) :: m/'| sed 's/:: z1/, intent(in) :: z1/'| sed 's/:: z2/, intent(in) :: z2/'>tmpout
 	mv tmpout inmzpd.pyf
 	$(F2PY) -c inmzpd.pyf $(ftest_LDADD)
+
+epszpd.pyf: epszpd.f Makefile.am
+	$(F2PY) --overwrite-signature -m epszpd -h epszpd.pyf only : epsweid : epszpd.f
+	sed 's/:: res/,intent(out) :: res/' <epszpd.pyf | sed 's/:: om/, intent(in) :: om/'| sed 's/:: pars/, intent(in) :: pars/' >tmpout
+	mv tmpout epszpd.pyf
+	$(F2PY) -c epszpd.pyf $(ftest_LDADD)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
