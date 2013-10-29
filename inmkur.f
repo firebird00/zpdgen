@@ -6,7 +6,7 @@
       double complex zaa,i,w,om
       double precision resFepspd_im,resFepspd_re,pars(5),
      *     Fepskur_im,Fepskur_re
-      external Fepskur_re, Fepskur_im
+      external Fepskur_re, Fepskur_im, resFepspd_im,resFepspd_re
       integer nlimit,last,neval,ier,iwork(10000)
       logical flag
       common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
@@ -22,21 +22,33 @@
       kpar=pars(5)
 
       if(omdi.LT.MINOMDLIM) then
-         zaa=-0.5*cmplx(omr,omi)/omdi
-         zbb=kpar/sqrttwo/omdi
+         zaa=-cmplx(omr,omi)/omdi
+         zbb=kpar*sqrttwo/omdi
          w=zbb**2/4-zaa
          bbi=ky**2;
          omsi=-ky;
          Alim=-1.0
          Blim=1.0
-         CALL DQAG(Fepskur_re,alim,blim,epsabs,epsrel,6,resr,abserr,
-     *        neval,ier, nlimit,40000,last,iwork,work)
+         CALL DQAG(Fepskur_re,alim,blim,epsabs,epsrel,6,resr,
+     *        abserr,neval,ier, nlimit,40000,last,iwork,work)
          if(ier.ne.0) goto 100
-         CALL DQAG(Fepskur_im,alim,blim,epsabs,epsrel,6,resi,abserr,
-     *        neval,ier, nlimit,40000,last,iwork,work)
+         CALL DQAG(Fepskur_im,alim,blim,epsabs,epsrel,6,resi,
+     *        abserr,neval,ier, nlimit,40000,last,iwork,work)
          if(ier.ne.0) goto 100
          u=resr+1.0+1.0/tau;
          v=resi;
+         if(omi.LT.0.AND.dble(w).GT.0) then
+            Alim=-1.0
+            Blim=1.0
+            CALL DQAG(resFepspd_re,alim,blim,epsabs,epsrel,6,resr,
+     *           abserr,neval,ier, nlimit,40000,last,iwork,work)
+            if(ier.ne.0) goto 100
+            CALL DQAG(resFepspd_im,alim,blim,epsabs,epsrel,6,resi,
+     *           abserr,neval,ier,nlimit,40000,last,iwork,work)
+            if(ier.ne.0) goto 100
+            u=u-resr
+            v=v-resi
+      endif
       endif
       RETURN
  100  FLAG = .TRUE.
@@ -116,7 +128,7 @@
       call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
       J0=cmplx(Jr0,Ji0)
       If(dble(w).ne.0) then
-         res=2.0/omdi*J0**2/sqrtpi*r**2/(r-zsqrt(w))/(r+zsqrt(w))*
+         res=4.0/omdi*J0**2/sqrtpi*r**2/(r-zsqrt(w))/(r+zsqrt(w))*
      *        dexp(-(muf*r+0.5*zbb)**2-2.0*(1.0-muf**2)*r**2)*
      *        (om-omsi*(1.0-1.5*etai)-2*(1-muf**2)**2*r**2*omsi*etai
      *        -(muf*r+zbb*0.5)**2*omsi*etai)

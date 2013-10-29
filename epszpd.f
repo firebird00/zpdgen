@@ -43,7 +43,7 @@ C
       nweid=nw
       if(omdi.LT.MINOMDLIM) then
          zaa=-cmplx(omr,omi)/omdi
-         zbb=kpar*sqrttwo/omdi
+         zbb=-kpar*sqrttwo/omdi
          w=zbb**2/4-zaa
          bbi=ky**2;
          omsi=-ky;
@@ -142,7 +142,7 @@ c         call zbesj(xbr,0.0,0,1,1,Jr0,Ji0,nz,ierr)
       double complex zaa,i,w,xb,J0,om
       common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
       parameter (limsinglg = 1.0e-5, sqrtpi = 1.77245385090552)
-      xb=2.0*zsqrt(bbi*(1.0d0-mu**2)*w)
+      xb=2.0*(bbi*(1.0d0-mu**2)*w)**(0.5)
       xbr=dble(xb)
       xbi=dimag(xb)
       i=cmplx(0,1)
