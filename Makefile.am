@@ -41,7 +41,7 @@ inmzpd.pyf: inmzpd.f Makefile.am
 	$(F2PY) -c inmzpd.pyf $(ftest_LDADD)
 
 epszpd.pyf: epszpd.f Makefile.am
-	$(F2PY) --overwrite-signature -m epszpd -h epszpd.pyf only : epsweid : epszpd.f
-	sed 's/:: res/,intent(out) :: res/' <epszpd.pyf | sed 's/:: om/, intent(in) :: om/'| sed 's/:: pars/, intent(in) :: pars/' >tmpout
+	$(F2PY) --overwrite-signature -m epszpd -h epszpd.pyf only : epsweid sigweid : epszpd.f
+	sed 's/:: res/,intent(out) :: res/' <epszpd.pyf | sed 's/:: om/, intent(in) :: om/'| sed 's/:: pars/, intent(in) :: pars/'| sed 's/:: za/, intent(in) :: za/'| sed 's/:: b/, intent(in) :: b/'| sed 's/:: zb/, intent(in) :: zb/'>tmpout
 	mv tmpout epszpd.pyf
 	$(F2PY) -c epszpd.pyf $(ftest_LDADD)

@@ -734,6 +734,7 @@ enable_option_checking
 enable_silent_rules
 enable_dependency_tracking
 enable_debug
+enable_profile
 enable_python
 '
       ac_precious_vars='build_alias
@@ -1369,6 +1370,7 @@ Optional Features:
   --disable-dependency-tracking
                           speeds up one-time build
   --enable-debug          enables debugging
+  --enable-profile        enables profiling
   --enable-python         enables python wrappers
 
 Some influential environment variables:
@@ -4267,6 +4269,7 @@ fi
 
 CFLAG=""
 FFLAGS=""
+
 # Check whether --enable-debug was given.
 if test "${enable_debug+set}" = set; then :
   enableval=$enable_debug; ok=$enableval
@@ -4281,8 +4284,23 @@ $as_echo "#define ZPDGEN_DEBUG 1" >>confdefs.h
 	CFLAGS="$CFLAGS -g -O0"
 	FFLAGS="$FFLAGS -g -O0"
 else
-	CFLAGS="-Ofast -funroll-loops"
-	FFLAGS="-Ofast -funroll-loops"
+	CFLAGS="$CFLAGS -Ofast -funroll-loops"
+	FFLAGS="$FFLAGS -Ofast -funroll-loops"
+fi
+
+# Check whether --enable-profile was given.
+if test "${enable_profile+set}" = set; then :
+  enableval=$enable_profile; ok=$enableval
+else
+  ok=no
+fi
+
+if test "$ok" = "yes"; then
+
+$as_echo "#define ZPDGEN_PROF 1" >>confdefs.h
+
+	CFLAGS="$CFLAGS -pg"
+	FFLAGS="$FFLAGS -pg"
 fi
 
 # Check whether --enable-python was given.

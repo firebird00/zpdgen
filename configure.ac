@@ -17,14 +17,22 @@ AC_CONFIG_MACRO_DIR([m4])
 
 CFLAG=""
 FFLAGS=""
+
 AC_ARG_ENABLE(debug, AC_HELP_STRING([--enable-debug],[enables debugging]), ok=$enableval, ok=no)
 if test "$ok" = "yes"; then
 	AC_DEFINE(ZPDGEN_DEBUG,1,[define to enable debugging code.])
 	CFLAGS="$CFLAGS -g -O0"
 	FFLAGS="$FFLAGS -g -O0"
 else
-	CFLAGS="-Ofast -funroll-loops"
-	FFLAGS="-Ofast -funroll-loops"
+	CFLAGS="$CFLAGS -Ofast -funroll-loops"
+	FFLAGS="$FFLAGS -Ofast -funroll-loops"
+fi
+
+AC_ARG_ENABLE(profile, AC_HELP_STRING([--enable-profile],[enables profiling]), ok=$enableval, ok=no)
+if test "$ok" = "yes"; then
+	AC_DEFINE(ZPDGEN_PROF,1,[define to enable profiling.])
+	CFLAGS="$CFLAGS -pg"
+	FFLAGS="$FFLAGS -pg"
 fi
 
 AC_ARG_ENABLE(python, AC_HELP_STRING([--enable-python],[enables python wrappers]), ok=$enableval, ok=no)

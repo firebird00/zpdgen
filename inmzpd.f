@@ -34,7 +34,8 @@ C
       integer nlimit,mf,nf,last,npts2,spoints(3)
 c      PARAMETER (nlimit=10000,limsingsm=1.0e-8,npts2=3,
 c     *     epsrel=1.0e-2,epsabs=1.0e-6)
-      PARAMETER (limsingsm=1.0e-8,npts2=3)
+      PARAMETER (limsingsm=1.0e-8,npts2=3,
+     *     epsrel=1.0e-4,epsabs=1.0e-8)
       double precision fpd_re,fpd_im
       EXTERNAL fpd_re,fpd_im,resfpd_im,resfpd_re
       external dqagi,dqagp,dqag,prerr
@@ -49,8 +50,6 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       nf=n
       w=zbb**2/4-zaa
       nlimit=10000
-      epsrel=1.0e-2
-      epsabs=1.0e-6
       ier=0
       if(dabs(dimag(w)).GT.limsingsm.OR.dble(w).LT.0) then
          alim=0.0
@@ -81,8 +80,8 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
      *        nlimit,40000,last,iwork,work)
          if(ier.ne.0) goto 100
-         u=u+resr;
-         v=v+resi;
+         u=u+resr
+         v=v+resi
       endif
       if(dimag(zaa).LT.0.AND.dble(w).GT.0) then
          Alim=-1.0

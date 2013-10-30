@@ -1,6 +1,6 @@
-from numpy import reshape,shape,transpose
+from numpy import reshape,shape,rank,transpose
 from inmzpd import inmweid
-from epszpd import epsweid
+from epszpd import epsweid,sigweid
 
 def Inm(za,zb,b,n,m):
     res=inmweid(za,zb,b,n,m)
@@ -17,6 +17,26 @@ def epsitg(om,pars):
         res=res[0]
         return res
     res=reshape(res,shape(transpose(om)))
+    res=transpose(res)
+    return res
+
+def sigmazpd(za,zb,b,anm):
+    if (rank(anm)==2):
+        numn,numm=shape(anm)
+    elif (rank(anm)==1):
+        numn=size(anm)
+        numm=0
+    elif (rank(anm)==0):
+        numn=0
+        numm=0
+    else:
+        print("error the rank of anm is not 0,1 or 2")
+        return 0
+    res=sigweid(za,zb,b,anm,numn,numm)
+    if (shape(za) ==()):
+        res=res[0]
+        return res
+    res=reshape(res,shape(transpose(za)))
     res=transpose(res)
     return res
 
