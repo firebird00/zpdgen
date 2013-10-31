@@ -16,7 +16,7 @@ def epsfun(v):
     za=-om/omdi
     zb=-np.sqrt(2)*kpar/omdi
     b=ky**2
-    anm=np.zeros((4,3))*(1+1j)
+    anm=np.zeros((4,3),dtype=np.complex128)
     anm[1,0]=(om-omsi*(1-1.5*etai))/omdi
     anm[1,2]=-omsi*etai/omdi
     anm[3,0]=-omsi*etai/omdi
@@ -33,6 +33,7 @@ numk=len(kys)
 inds=np.concatenate((np.arange(ind0,numk), np.arange(ind0-1,-1,-1)))
 for l in inds:
     ky=kys[l]
+    #    print('ky:',ky)
     res=root(epsfun,om0,tol=1e-8,method='hybr')
     omky[l]=res.x[0]+1j*res.x[1]
     if(l==numk-1):

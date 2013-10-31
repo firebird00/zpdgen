@@ -34,14 +34,14 @@ C
       integer nlimit,mf,nf,last,npts2,spoints(3)
 c      PARAMETER (nlimit=10000,limsingsm=1.0e-8,npts2=3,
 c     *     epsrel=1.0e-2,epsabs=1.0e-6)
-      PARAMETER (limsingsm=1.0e-8,npts2=3,
+      PARAMETER (limsingsm=1.0e-12,npts2=3,
      *     epsrel=1.0e-4,epsabs=1.0e-8)
       double precision fpd_re,fpd_im
       EXTERNAL fpd_re,fpd_im,resfpd_im,resfpd_re
       external dqagi,dqagp,dqag,prerr
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       FLAG = .FALSE.
-      i=cmplx(0,1)
+      i=dcmplx(0,1)
       za=XI+i*YI
       zaa=za
       zbb=zb
@@ -131,21 +131,20 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       end function Fpd_im
 
       double complex function Fpd(s)
-      double precision s,limsingsm,xbr,Jr0,Ji0,zbb,bbi,xbi
+      double precision s,limsingsm,xbr,Jr0,zbb,bbi
       integer mf,nf,ierr,nz
       double complex z1,z2,zaa,Gm,weidGm,w
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       external weidGm,zbesj
-      parameter (limsingsm = 1.0e-8)
-      z1=0.5*(zbb+zsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
-      z2=0.5*(zbb-zsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
+      parameter (limsingsm = 1.0e-12)
+      z1=0.5*(zbb+cdsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
+      z2=0.5*(zbb-cdsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
+c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       Gm=weidGm(z1,z2,mf)
       if ((zabs(z1).LT.limsingsm).and.(zabs(z2).LT.limsingsm)) then
          Fpd=0.0
       else
          xbr=dble(bbi*2.0)**(0.5)*s
-c         xbi=0.0
-c         call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
          JR0=DBESJ0(XBR)
          Fpd=2.0*dexp(-s**2)*Jr0**2*Gm*s**nf
       endif
@@ -156,7 +155,7 @@ c         call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
       double complex weidZm,z1,z2
       double precision adelz,limsingsm
       integer m
-      parameter (limsingsm = 1.0e-8)
+      parameter (limsingsm = 1.0e-12)
       external weidZm
       adelz=zabs(z1-z2)
       if(adelz.LT.limsingsm) then
@@ -179,11 +178,11 @@ c         call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
       integer m,k
       external wofzwh,dgamma
       parameter (sqrtpi = 1.77245385090552)
-      i=cmplx(0,1)
+      i=dcmplx(0,1)
       xi=dble(z)
       yi=dimag(z)
       call wofzwh(xi,yi,u,v,flag)
-      Z0=u+i*v
+      Z0=dcmplx(u,v)
       weidZm=i*sqrtpi*Z0*z**m
       if (m.gt.0) then
          do 20 k=1,m
@@ -210,7 +209,7 @@ c         call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
       end function resFpd_im
 
       double complex function resFpd(mu)
-      double precision mu,xbr,xbi,Jr0,Ji0,zbb,bbi,sqrtpi
+      double precision mu,xbr,xbi,Jr0,Ji0,zbb,bbi,sqrtpi,fnu
       integer mf,nf,ierr,nz
       double complex zaa,i,w,xb,J0
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
@@ -218,12 +217,13 @@ c         call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
       xb=2.0*zsqrt(bbi*(1-mu**2)*w)
       xbr=dble(xb)
       xbi=dimag(xb)
-      i=cmplx(0,1)
-      call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
-      J0=cmplx(Jr0,Ji0)
-      resFpd=i*2**(0.5*(nf+3))*J0**2*sqrtpi*w**(nf*0.5)*
-     *     (1-mu**2)**((nf-1)*0.5)*(mu*zsqrt(w)+0.5*zbb)**mf*
-     *     zexp(-(mu*zsqrt(w)+0.5*zbb)**2-2.0*(1.0-mu*mu)*w)
+      fnu=0.0
+      i=dcmplx(0,1)
+      call zbesj(xbr,xbi,fnu,1,1,Jr0,Ji0,nz,ierr)
+      J0=dcmplx(Jr0,Ji0)
+      resFpd=i*2.0D0**(0.5D0*(nf+3))*J0**2.0D0*sqrtpi*w**(nf*0.5D0)*
+     *     (1-mu**2)**((nf-1)*0.5D0)*(mu*cdsqrt(w)+0.5*zbb)**mf*
+     *     cdexp(-(mu*cdsqrt(w)+0.5D0*zbb)**2-2.0D0*(1.0D0-mu*mu)*w)
 c      resFpd=i*2**(0.5*(nf+3))*J0**2*sqrtpi*w**(nf*0.5)*
 c     *     zexp(-(mu*zsqrt(w)+0.5*zbb)**2-2.0*(1.0-mu*mu)*w)
 c      if(nf.gt.1) then
@@ -250,19 +250,20 @@ Cf2py double complex dimension(numza) :: res
       logical flag
       external inmzpd,prerr
       double precision largestxi,largestyi,largeval
-      parameter (largestxi=1E4,largestyi=1E4,largeval=1d120)
+      parameter (largestxi=1E5,largestyi=1E5,largeval=1d120)
       do 10 k=1,numza
          xi=dble(za(k))
          yi=dimag(za(k))
          if (dabs(xi).gt.largestxi.or.dabs(yi).gt.largestyi) goto 120
          call inmzpd(xi,yi,zb,b,n,m,u,v,flag)
          if(flag) goto 110
-         res(k)=cmplx(u,v)
+         res(k)=dcmplx(u,v)
  10   continue
       return
  110  call prerr(za(k),zb,b)
       return
- 120  res(k)=largeval
+ 120  write(*,*) "za value out of bounds (+-1e4)! returning:", largeval
+      res(k)=largeval
       continue
       end
 

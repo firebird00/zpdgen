@@ -36,6 +36,21 @@
       b=ky**2
       zb=-dsqrt(2.0d0)*kpar/omdi
 
+c      om = cmplx(0.20400002598762512,1.0728836485895954E-008)
+c      za=-om/omdi
+c      xi=dble(za)
+c      yi=dimag(za)
+c      n=1
+c      m=0
+c      call inmzpd(xi,yi,zb,b,n,m,u,v,flag)
+c      stop
+
+c      om = cmplx(0.20400002598762512,1.0728836485895954E-008)
+c      xi=dble(om)
+c      yi=dimag(om)
+c      call epszpd(xi,yi,pars,u,v,flag)
+c      stop
+
       do 20 k=1,3
          n=ns(k,1)
          m=ns(k,2);

@@ -51,7 +51,7 @@ C     COEFFICIENTS TO USE FOR N=16
       DATA CFFT(15) / 1.362240822271959 /
       DATA CFFT(16) / 1.748395886081962 /
       FLAG = .FALSE.
-      i = CMPLX(0,1)
+      i = DCMPLX(0,1)
       N = 16
       L = 2**(-0.25)*DSQRT(N*1.0d0)
 
@@ -69,7 +69,7 @@ c      WRITE (*,*) Z1
       SR = DBLE(Z2)
       SI = DIMAG(Z2)
       CALL RPOLYEV(N,SR,SI,CFFT,QR,QI,PVR,PVI)
-      P = CMPLX(PVR,PVI)
+      P = DCMPLX(PVR,PVI)
       Z2 = A+B*P+C
       IF (YI.LT.0) THEN
          Z2=-Z2
