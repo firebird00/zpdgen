@@ -22,14 +22,14 @@ C
      *     work(40000),resr,resi,zbb,bbi,minomdlim,tau,
      *     pars(5),sqrttwo,omsi,limsingsm,limsinglg
       double complex zaa,i,w,om
-      INTEGER n,m,np1,nu,j,l,iwork(10000),limit,spoints(3)
+      INTEGER n,m,np1,nu,j,l,iwork(10000),limit
       LOGICAL A, B, FLAG
       integer nlimit,mf,nf,last,neval,ier,npts2
       PARAMETER (MINOMDLIM = -1e-6,
      *     nlimit=10000,epsrel=1.0e-4,epsabs=1.0e-8,
      *     sqrttwo =1.414213562373095,npts2=3,
      *     limsingsm=1.0e-12,limsinglg=1.0e-5)
-      double precision fpd_re,fpd_im
+      double precision fpd_re,fpd_im,spoints(3)
       EXTERNAL DQAG, fepspd_re,fepspd_im,resfepspd_im,resfepspd_re
       common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
       FLAG = .FALSE.
@@ -261,12 +261,12 @@ Cf2py double complex dimension(numza) :: res
       subroutine sigmazpd (xi, yi, zb, bi, anm, 
      *     numn, numm, u, v, flag)
       DOUBLE PRECISION xi,yi,bi,zb,z1,z2,u,v, 
-     *     epsabs,epsrel,alim,blim,abserr,
+     *     epsabs,epsrel,alim,blim,abserr,spoints(3),
      *     work(40000),resr,resi,zbb,bbi,limsingsm,limtn
       double complex zaa,za,i,w,anml(40),anm(numn,numm)
       INTEGER np1,nu,j,l,iwork(10000),nml(40,2),ier,neval,numn,numm
       LOGICAL A, B, FLAG
-      integer nlimit,mf,nf,last,npts2,spoints(3),k,numnml
+      integer nlimit,mf,nf,last,npts2,k,numnml
       PARAMETER (limsingsm=1.0e-12,npts2=3,limtn=1.0e-20,
      *     epsrel=1.0e-4,epsabs=1.0e-8)
       double precision fpdsig_re,fpdsig_im,resfpdsig_im,resfpdsig_re

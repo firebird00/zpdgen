@@ -31,12 +31,12 @@ C
       double complex zaa,za,i,w
       INTEGER n,m,np1,nu,j,l,iwork(10000),ier,neval
       LOGICAL A, B, FLAG
-      integer nlimit,mf,nf,last,npts2,spoints(3)
+      integer nlimit,mf,nf,last,npts2
 c      PARAMETER (nlimit=10000,limsingsm=1.0e-8,npts2=3,
 c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       PARAMETER (limsingsm=1.0e-12,npts2=3,
      *     epsrel=1.0e-4,epsabs=1.0e-8)
-      double precision fpd_re,fpd_im
+      double precision fpd_re,fpd_im,spoints(3)
       EXTERNAL fpd_re,fpd_im,resfpd_im,resfpd_re
       external dqagi,dqagp,dqag,prerr
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
