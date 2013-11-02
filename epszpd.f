@@ -176,21 +176,17 @@ c      write (*,*) s, dble(G0), dimag(G0),dble(G2),dimag(G2)
       double precision mu,limsinglg,xbr,xbi,Jr0,Ji0,zbb,fnu
       double precision bbi,sqrtpi,omdi,etai,tau,ky,kpar,omsi
       integer ierr,nz
+      EXTERNAL CBJ0
       double complex zaa,i,w,xb,J0,om
       common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
       parameter (limsinglg = 1.0e-5, sqrtpi = 1.77245385090552)
       xb=2.0*cdsqrt(bbi*(1.0d0-mu**2)*w)
-      xbr=dble(xb)
-      xbi=dimag(xb)
-      fnu=0.0
+c      xbr=dble(xb)
+c      xbi=dimag(xb)
+c      fnu=0.0
       i=dcmplx(0,1)
-      call zbesj(xbr,xbi,fnu,1,1,Jr0,Ji0,nz,ierr)
-      if (ierr.NE.0) then
-         write (*,*) "x:", xbr, xbi
-         write (*,*) "ierr:", ierr
-         return
-      endif
-      J0=dcmplx(Jr0,Ji0)
+c      call zbesj(xbr,xbi,fnu,1,1,Jr0,Ji0,nz,ierr)
+      call cbj0(xb,J0)
       resFepspd=i*4.0*J0**2*sqrtpi/omdi*cdsqrt(w)*
      *     cdexp(-(mu*cdsqrt(w)+0.5*zbb)**2-2.0*(1.0-mu**2)*w)*
      *     (om-omsi*(1.0+etai*(2.0*w*(1-mu**2)
@@ -377,7 +373,7 @@ Cf2py double complex dimension(numza) :: res
       double complex z1,z2,zaa,Gm,weidGm,w,anml(40),res
       common /sigcom/ anml,zbb,bbi,zaa,w,nml,numnml
 c      common /sigcom/ anm,numn,numm,zbb,bbi,zaa,w
-      external weidGm,zbesj
+      external weidGm
       parameter (limsingsm = 1.0e-12,limtn=1.0e-20)
       res=0.0d0
       z1=0.5d0*(zbb+cdsqrt(zbb**2-2.0d0*(s**2+2.0d0*zaa)))
@@ -416,16 +412,13 @@ c      common /sigcom/ anm,numn,numm,zbb,bbi,zaa,w
       double precision mu,xbr,xbi,Jr0,Ji0,zbb,bbi,sqrtpi,limtn,fnu
       integer numnml,nml(40,2),ierr,nz,j,k,nf,mf
       double complex zaa,i,w,xb,J0,anml(40),res
+      external cbj0
       common /sigcom/ anml,zbb,bbi,zaa,w,nml,numnml
 c      common /sigcom/ anm,numn,numm,zbb,bbi,zaa,w
       parameter (sqrtpi = 1.77245385090552,limtn=1.0e-20)
       xb=2.0d0*cdsqrt(bbi*(1-mu**2)*w)
-      xbr=dble(xb)
-      xbi=dimag(xb)
-      fnu=0.0d0
       i=dcmplx(0,1.0D0)
-      call zbesj(xbr,xbi,fnu,1,1,Jr0,Ji0,nz,ierr)
-      J0=dcmplx(Jr0,Ji0)
+      call cbj0(xb,J0)
       res=0.0d0
       do 70 j=1,numnml
          nf=nml(j,1)

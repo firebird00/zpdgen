@@ -135,7 +135,7 @@ libgpdf_a_LIBADD =
 am_libgpdf_a_OBJECTS = libgpdf_a-gpdf_inmzpd.$(OBJEXT) \
 	libgpdf_a-wofzwh.$(OBJEXT) libgpdf_a-rpolyev.$(OBJEXT) \
 	libgpdf_a-utils.$(OBJEXT) libgpdf_a-inmzpd.$(OBJEXT) \
-	libgpdf_a-epszpd.$(OBJEXT)
+	libgpdf_a-epszpd.$(OBJEXT) libgpdf_a-cbj0.$(OBJEXT)
 libgpdf_a_OBJECTS = $(am_libgpdf_a_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_ctest_OBJECTS = ctest-ctest.$(OBJEXT)
@@ -388,7 +388,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LIBRARIES = libgpdf.a
-libgpdf_a_SOURCES = gpdf_inmzpd.c wofzwh.f rpolyev.f utils.f inmzpd.f epszpd.f
+libgpdf_a_SOURCES = gpdf_inmzpd.c wofzwh.f rpolyev.f utils.f inmzpd.f epszpd.f cbj0.f
 libgpdf_a_CFLAGS = -fPIC -I./
 libgpdf_a_FFLAGS = -I./ -fPIC -fimplicit-none -fbounds-check
 libgpdf_a_INCLUDES = $(all_includes)
@@ -625,6 +625,12 @@ libgpdf_a-epszpd.o: epszpd.f
 
 libgpdf_a-epszpd.obj: epszpd.f
 	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-epszpd.obj `if test -f 'epszpd.f'; then $(CYGPATH_W) 'epszpd.f'; else $(CYGPATH_W) '$(srcdir)/epszpd.f'; fi`
+
+libgpdf_a-cbj0.o: cbj0.f
+	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-cbj0.o `test -f 'cbj0.f' || echo '$(srcdir)/'`cbj0.f
+
+libgpdf_a-cbj0.obj: cbj0.f
+	$(AM_V_F77)$(F77) $(libgpdf_a_FFLAGS) $(FFLAGS) -c -o libgpdf_a-cbj0.obj `if test -f 'cbj0.f'; then $(CYGPATH_W) 'cbj0.f'; else $(CYGPATH_W) '$(srcdir)/cbj0.f'; fi`
 
 ftest-ftest.o: ftest.f
 	$(AM_V_F77)$(F77) $(ftest_FFLAGS) $(FFLAGS) -c -o ftest-ftest.o `test -f 'ftest.f' || echo '$(srcdir)/'`ftest.f

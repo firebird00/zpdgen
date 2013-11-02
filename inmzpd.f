@@ -135,7 +135,7 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       integer mf,nf,ierr,nz
       double complex z1,z2,zaa,Gm,weidGm,w
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
-      external weidGm,zbesj
+      external weidGm
       parameter (limsingsm = 1.0e-12)
       z1=0.5*(zbb+cdsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
       z2=0.5*(zbb-cdsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
@@ -212,19 +212,21 @@ c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       double precision mu,xbr,xbi,Jr0,Ji0,zbb,bbi,sqrtpi,fnu
       integer mf,nf,ierr,nz
       double complex zaa,i,w,xb,J0
+      external cbj0
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       parameter (sqrtpi = 1.77245385090552)
       xb=2.0*zsqrt(bbi*(1-mu**2)*w)
-      xbr=dble(xb)
-      xbi=dimag(xb)
-      fnu=0.0
+c      xbr=dble(xb)
+c      xbi=dimag(xb)
+c      fnu=0.0
       i=dcmplx(0,1)
-      call zbesj(xbr,xbi,fnu,1,1,Jr0,Ji0,nz,ierr)
-      J0=dcmplx(Jr0,Ji0)
+c      call zbesj(xbr,xbi,fnu,1,1,Jr0,Ji0,nz,ierr)
+c      J0=dcmplx(Jr0,Ji0)
+      call cbj0(xb,J0)
       resFpd=i*2.0D0**(0.5D0*(nf+3))*J0**2.0D0*sqrtpi*w**(nf*0.5D0)*
      *     (1-mu**2)**((nf-1)*0.5D0)*(mu*cdsqrt(w)+0.5*zbb)**mf*
      *     cdexp(-(mu*cdsqrt(w)+0.5D0*zbb)**2-2.0D0*(1.0D0-mu*mu)*w)
-c      resFpd=i*2**(0.5*(nf+3))*J0**2*sqrtpi*w**(nf*0.5)*
+c     resFpd=i*2**(0.5*(nf+3))*J0**2*sqrtpi*w**(nf*0.5)*
 c     *     zexp(-(mu*zsqrt(w)+0.5*zbb)**2-2.0*(1.0-mu*mu)*w)
 c      if(nf.gt.1) then
 c         resFpd=resFpd*(1-mu**2)**(0.5*(nf-1))
