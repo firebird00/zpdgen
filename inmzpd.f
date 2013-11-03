@@ -94,7 +94,7 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          if(ier.ne.0) goto 100
          u=u-resr
          v=v-resi
-      else if(dimag(zaa).EQ.0.AND.dble(w).GT.0) then
+      else if(dimag(zaa).EQ.0.0d0.AND.dble(w).GT.0) then
          Alim=-1.0
          Blim=1.0
          CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
@@ -160,10 +160,11 @@ c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       adelz=zabs(z1-z2)
       if(adelz.LT.limsingsm) then
          if(m.gt.0) then
-            weidGm=m*weidZm(z1,m-1)-2*weidZm(z1,m+1)
+            weidGm=m*weidZm(0.5d0*(z1+z2),m-1)
+     *           -2.0d0*weidZm(0.5d0*(z1+z2),m+1)
          else
             if (m.eq.0) then
-               weidGm=-2*weidZm(z1,m+1)
+               weidGm=-2.0d0*weidZm(0.5d0*(z1+z2),m+1)
             endif
          endif
       else
