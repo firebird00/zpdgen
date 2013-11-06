@@ -133,12 +133,13 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       double complex function Fpd(s)
       double precision s,limsingsm,xbr,Jr0,zbb,bbi
       integer mf,nf,ierr,nz
-      double complex z1,z2,zaa,Gm,weidGm,w
+      double complex z1,z2,zaa,Gm,weidGm,w,zr
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       external weidGm
       parameter (limsingsm = 1.0e-12)
-      z1=0.5*(zbb+cdsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
-      z2=0.5*(zbb-cdsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
+      zr=cdsqrt(4.0*w-2.0*s**2)
+      z1=0.5*(zbb+zr)
+      z2=0.5*(zbb-zr)
 c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       Gm=weidGm(z1,z2,mf)
       if ((zabs(z1).LT.limsingsm).and.(zabs(z2).LT.limsingsm)) then
