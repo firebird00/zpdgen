@@ -27,9 +27,9 @@ C
       implicit none
       DOUBLE PRECISION xi,yi,bi,zb,z1,z2,u,v, 
      *     epsabs,epsrel,alim,blim,abserr,
-     *     work(40000),resr,resi,zbb,bbi,limsingsm
+     *     work(4000),resr,resi,zbb,bbi,limsingsm
       double complex zaa,za,i,w
-      INTEGER n,m,np1,nu,j,l,iwork(10000),ier,neval
+      INTEGER n,m,np1,nu,j,l,iwork(1000),ier,neval
       LOGICAL A, B, FLAG
       integer nlimit,mf,nf,last,npts2
 c      PARAMETER (nlimit=10000,limsingsm=1.0e-8,npts2=3,
@@ -49,15 +49,15 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       mf=m
       nf=n
       w=zbb**2/4-zaa
-      nlimit=10000
+      nlimit=1000
       ier=0
       if(dabs(dimag(w)).GT.limsingsm.OR.dble(w).LT.0) then
          alim=0.0
          CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
-     *        nlimit,40000,last,iwork,work)
+     *        nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
          CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
-     *        nlimit,40000,last,iwork,work)
+     *        nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
          u=resr
          v=resi
@@ -66,19 +66,19 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          blim=dsqrt(2.01*dble(w))
          spoints(1)=dsqrt(2.0*dble(w))
          CALL DQAGP(Fpd_re,alim,blim,npts2,spoints,epsabs,epsrel,resr,
-     *        abserr,neval,ier,nlimit,40000,last,iwork,work)
+     *        abserr,neval,ier,nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
          CALL DQAGP(Fpd_im,alim,blim,npts2,spoints,epsabs,epsrel,resi,
-     *        abserr,neval,ier,nlimit,40000,last,iwork,work)
+     *        abserr,neval,ier,nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
          u=resr;
          v=resi;
          alim=blim;
          CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
-     *        nlimit,40000,last,iwork,work)
+     *        nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
          CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
-     *        nlimit,40000,last,iwork,work)
+     *        nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
          u=u+resr
          v=v+resi
@@ -87,10 +87,10 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          Alim=-1.0
          Blim=1.0
          CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
-     *        neval,ier, nlimit,40000,last,iwork,work)
+     *        neval,ier, nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
          CALL DQAG(resFpd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
-     *        neval,ier,nlimit,40000,last,iwork,work)
+     *        neval,ier,nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
          u=u-resr
          v=v-resi
@@ -98,10 +98,10 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          Alim=-1.0
          Blim=1.0
          CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
-     *        neval,ier, nlimit,40000,last,iwork,work)
+     *        neval,ier, nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
          CALL DQAG(resFpd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
-     *        neval,ier,nlimit,40000,last,iwork,work)
+     *        neval,ier,nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
          u=u-0.5*resr
          v=v-0.5*resi
@@ -137,7 +137,7 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       external weidGm
       parameter (limsingsm = 1.0e-12)
-      zr=cdsqrt(4.0*w-2.0*s**2)
+      zr=cdsqrt(4.0*w-2.0*s)
       z1=0.5*(zbb+zr)
       z2=0.5*(zbb-zr)
 c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
@@ -145,9 +145,9 @@ c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       if ((zabs(z1).LT.limsingsm).and.(zabs(z2).LT.limsingsm)) then
          Fpd=0.0
       else
-         xbr=dble(bbi*2.0)**(0.5)*s
+         xbr=dsqrt(bbi*2.0*s)
          JR0=DBESJ0(XBR)
-         Fpd=2.0*dexp(-s**2)*Jr0**2*Gm*s**nf
+         Fpd=dexp(-s)*Jr0**2*Gm*s**(nf-1)/2
       endif
       return
       end function Fpd
@@ -163,7 +163,7 @@ c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       call wofzwh2(z1,z2,GZ0,m,flag)
       weidGm=i*sqrtpi*GZ0/(z1-z2)
       if (m.gt.0) then
-         do 20 k=1,m
+         do 20 k=2,m
             weidGm=weidGm+1.0/sqrtpi*dgamma((m-k+1)*0.5d0)*
      *           (z1**(k-1)-z2**(k-1))/(z1-z2)
  20      continue
@@ -194,7 +194,7 @@ c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       external cbj0
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       parameter (sqrtpi = 1.77245385090552)
-      xb=2.0*zsqrt(bbi*(1-mu**2)*w)
+      xb=2.0*cdsqrt(bbi*(1-mu**2)*w)
 c      xbr=dble(xb)
 c      xbi=dimag(xb)
 c      fnu=0.0
