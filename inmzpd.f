@@ -152,44 +152,23 @@ c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       end function Fpd
 
       double complex function weidGm(z1,z2,m)
-      double complex weidZm,z1,z2
-      double precision adelz,limsingsm
-      integer m
-      parameter (limsingsm = 1.0e-12)
-      external weidZm
-      adelz=zabs(z1-z2)
-      if(adelz.LT.limsingsm) then
-         if(m.gt.0) then
-            weidGm=m*weidZm(0.5d0*(z1+z2),m-1)
-     *           -2.0d0*weidZm(0.5d0*(z1+z2),m+1)
-         else
-            if (m.eq.0) then
-               weidGm=-2.0d0*weidZm(0.5d0*(z1+z2),m+1)
-            endif
-         endif
-      else
-         weidGm=(weidZm(z1,m)-weidZm(z2,m))/(z1-z2)
-      endif
-      return
-      end function weidGm
-
-      double complex function weidZm(z,m)
-      double complex z,i,Z0
-      double precision xi,yi,u,v,dgamma,sqrtpi
+      double complex z1,z2,Gm,GZ0,i
+      double precision limsingsm,sqrtpi
       integer m,k
-      external wofzwh,dgamma
+      parameter (limsingsm = 1.0e-12,sqrtpi = 1.77245385090552)
+      external wofzwh2
       logical flag
-      parameter (sqrtpi = 1.77245385090552)
       i=dcmplx(0,1)
-      call wofzwh(z,Z0,flag)
-      weidZm=i*sqrtpi*Z0*z**m
+      call wofzwh2(z1,z2,GZ0,m,flag)
+      weidGm=i*sqrtpi*GZ0/(z1-z2)
       if (m.gt.0) then
          do 20 k=1,m
-            weidZm=weidZm+1.0/sqrtpi*dgamma((m-k+1)*0.5d0)*z**(k-1)
+            weidGm=weidGm+1.0/sqrtpi*dgamma((m-k+1)*0.5d0)*
+     *           (z1**(k-1)-z2**(k-1))/(z1-z2)
  20      continue
       endif 
       return
-      end function weidZm
+      end function weidGm
 
       double precision function resFpd_re(s)
       double complex resFpd
