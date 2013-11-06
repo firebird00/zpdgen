@@ -147,7 +147,7 @@ c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       else
          xbr=dsqrt(bbi*2.0*s)
          JR0=DBESJ0(XBR)
-         Fpd=dexp(-s)*Jr0**2*Gm*s**(nf-1)/2
+         Fpd=dexp(-s)*Jr0**2*Gm*s**((nf-1)/2)
       endif
       return
       end function Fpd
