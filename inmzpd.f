@@ -175,15 +175,13 @@ c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
 
       double complex function weidZm(z,m)
       double complex z,i,Z0
-      double precision xi,yi,u,v,flag,dgamma,sqrtpi
+      double precision xi,yi,u,v,dgamma,sqrtpi
       integer m,k
       external wofzwh,dgamma
+      logical flag
       parameter (sqrtpi = 1.77245385090552)
       i=dcmplx(0,1)
-      xi=dble(z)
-      yi=dimag(z)
-      call wofzwh(xi,yi,u,v,flag)
-      Z0=dcmplx(u,v)
+      call wofzwh(z,Z0,flag)
       weidZm=i*sqrtpi*Z0*z**m
       if (m.gt.0) then
          do 20 k=1,m

@@ -1,5 +1,5 @@
 lib_LIBRARIES = libgpdf.a
-libgpdf_a_SOURCES = gpdf_inmzpd.c wofzwh.f rpolyev.f utils.f inmzpd.f epszpd.f cbj0.f
+libgpdf_a_SOURCES = gpdf_inmzpd.c wofzwh.f cpolyev.f utils.f inmzpd.f epszpd.f cbj0.f
 libgpdf_a_CFLAGS = -fPIC -I./
 libgpdf_a_FFLAGS = -I./ -fPIC -fimplicit-none -fbounds-check
 libgpdf_a_INCLUDES=$(all_includes)
