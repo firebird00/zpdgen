@@ -58,7 +58,7 @@ C
             v=resi;
          else
             alim=0.0
-            blim=dsqrt(2.01*dble(w))
+            blim=dsqrt(2.0d0*dble(w))+0.1
             spoints(1)=dsqrt(2.0*dble(w))
             CALL DQAGP(Fepspd_re,alim,blim,npts2,spoints,epsabs,epsrel,
      *           resr,abserr,neval,ier,nlimit,40000,last,iwork,work)
@@ -80,8 +80,8 @@ C
          endif
       endif
       if(omi.LT.0.AND.dble(w).GT.0) then
-         Alim=-1.0
-         Blim=1.0
+         Alim=-1.0+limsingsm
+         Blim=1.0-limsingsm
          CALL DQAG(resFepspd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
      *        neval,ier, nlimit,40000,last,iwork,work)
          if(ier.ne.0) goto 100
@@ -91,8 +91,8 @@ C
          u=u-resr
          v=v-resi
       else if(omi.EQ.0.AND.dble(w).GT.0) then
-         Alim=-1.0
-         Blim=1.0
+         Alim=-1.0+limsingsm
+         Blim=1.0-limsingsm
          CALL DQAG(resFepspd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
      *        neval,ier, nlimit,40000,last,iwork,work)
          if(ier.ne.0) goto 100
@@ -133,25 +133,24 @@ c      write (*,*) "bbi:",bbi
       double complex function Fepspd(s)
       double precision s,limsinglg,xbr,Jr0,zbb,limsingsm
       double precision bbi,omdi,omsi,etai,tau,ky,kpar
-      double complex z1,z2,zaa,G0,G2,weidGm,w,om
+      double complex z1,z2,zaa,G0,G2,weidGm,w,om,zr
       common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
       external weidGm
       parameter (limsinglg = 1.0e-5,limsingsm=1.0e-12)
-
-      z1=0.5d0*(zbb+cdsqrt(zbb**2-2.0d0*(s**2+2.0d0*zaa)))
-      z2=0.5d0*(zbb-cdsqrt(zbb**2-2.0d0*(s**2+2.0d0*zaa)))
-      if ((cdabs(z1).LT.limsingsm).and.(cdabs(z2).LT.limsingsm)) then
-         Fepspd=0.0
-      else
+      zr=cdsqrt(4.0*w-2.0*s)
+      z1=0.5*(zbb+zr)
+      z2=0.5*(zbb-zr)
+c      if ((cdabs(z1).LT.limsingsm).and.(cdabs(z2).LT.limsingsm)) then
+c         Fepspd=0.0
+c      else
          G0=weidGm(z1,z2,0)
          G2=weidGm(z1,z2,2)
-         xbr=dsqrt(bbi*2.0)*s
+         xbr=dsqrt(bbi*2.0*s)
          jr0=dbesj0(xbr)
-         Fepspd=2.0d0/omdi*
-     *        Jr0**2*dexp(-s**2)*(
-     *        (om-omsi*(1.0+(s**2-1.5)*etai))*G0-omsi*etai*G2
-     *        )*s
-      end if
+         Fepspd=Jr0**2*dexp(-s)*(
+     *        (om-omsi*(1.0+(s-1.5)*etai))*G0-omsi*etai*G2
+     *        )/omdi
+c      end if
 c      write (*,*) s, dble(G0), dimag(G0),dble(G2),dimag(G2)
       return
       end function Fepspd
@@ -370,25 +369,27 @@ Cf2py double complex dimension(numza) :: res
       double complex function Fsigpd(s)
       double precision s,limsingsm,xbr,Jr0,Ji0,zbb,bbi,xbi,limtn
       integer numnml,nml(40,2),ierr,nz,j,k
-      double complex z1,z2,zaa,Gm,weidGm,w,anml(40),res
+      double complex z1,z2,zaa,Gm,weidGm,w,anml(40),zr
       common /sigcom/ anml,zbb,bbi,zaa,w,nml,numnml
 c      common /sigcom/ anm,numn,numm,zbb,bbi,zaa,w
       external weidGm
       parameter (limsingsm = 1.0e-12,limtn=1.0e-20)
-      res=0.0d0
-      z1=0.5d0*(zbb+cdsqrt(zbb**2-2.0d0*(s**2+2.0d0*zaa)))
-      z2=0.5d0*(zbb-cdsqrt(zbb**2-2.0d0*(s**2+2.0d0*zaa)))
-      if ((cdabs(z1).LT.limsingsm).and.(cdabs(z2).LT.limsingsm)) then
-         res=0.0d0
-      else
-         xbr=dsqrt(bbi*2.0d0)*s
+      zr=cdsqrt(4.0*w-2.0*s)
+      z1=0.5*(zbb+zr)
+      z2=0.5*(zbb-zr)
+      Fsigpd=0.0d0
+c      if ((cdabs(z1).LT.limsingsm).and.(cdabs(z2).LT.limsingsm)) then
+c         res=0.0d0
+c      else
+         xbr=dsqrt(bbi*2.0d0*s)
          JR0=DBESJ0(XBR)
          do 50 j=1,numnml
             Gm=weidGm(z1,z2,nml(j,2))
-            res=res+anml(j)*2.0d0*dexp(-s**2)*Jr0**2*Gm*s**(nml(j,1))
+            Fsigpd=Fsigpd+anml(j)*dexp(-s)*Jr0**2*
+     *           Gm*s**(0.5d0*(nml(j,1)-1))
  50      continue
-      endif
-      Fsigpd=res
+c      endif
+c      Fsigpd=res
       return
       end function Fsigpd
 

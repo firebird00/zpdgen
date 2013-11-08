@@ -220,7 +220,8 @@ c         call error handler if necessary.
 c
       lvl = 0
 10    if(ier.eq.6) lvl = 1
-      if(ier.ne.0) return
+      if(ier.ne.0) write (*,*) "dqagp: ier=",ier
+      return
 c     call xerror(26habnormal return from dqagp,26,ier,lvl)
 c      return
       end

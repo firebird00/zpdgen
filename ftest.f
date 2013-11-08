@@ -38,13 +38,16 @@
 
 c      om = cmplx(0.20400002598762512,1.0728836485895954E-008)
 c      za=-om/omdi
+c      za=dcmplx( -3.0000000000000107, -2.7000000000000117)  
+c      zb=0.0000000000000000
+c      b=8.9999999999999997d-002
 c      xi=dble(za)
 c      yi=dimag(za)
-c      n=1
+c      n=0
 c      m=0
 c      call inmzpd(xi,yi,zb,b,n,m,u,v,flag)
 c      stop
-
+      
 c      om = cmplx(0.20400002598762512,1.0728836485895954E-008)
 c      xi=dble(om)
 c      yi=dimag(om)

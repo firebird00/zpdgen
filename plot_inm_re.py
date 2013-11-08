@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import gpdf as gp
-nlist=[[0,0],[1,0],[2,0],[0,2],[1,2],[2,2],[0,4],[1,4],[2,4]]
+nlist=[[1,0],[2,0],[3,0],[1,2],[2,2],[3,2],[1,4],[2,4],[3,4]]
 cnts=np.arange(-2,2.2,0.2)
 wdts=np.ones(cnts.shape);
 wdts[0]=2.0

@@ -41,6 +41,10 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       external dqagi,dqagp,dqag,prerr
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       FLAG = .FALSE.
+      if(n.eq.0) then
+         write (*,*) "n must be >=1!!"
+         goto 100
+      endif
       i=dcmplx(0,1)
       za=XI+i*YI
       zaa=za
@@ -52,7 +56,7 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       nlimit=1000
       ier=0
       if(dabs(dimag(w)).GT.limsingsm.OR.dble(w).LT.0) then
-         alim=0.0
+         alim=limsingsm
          CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
      *        nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
@@ -62,8 +66,8 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          u=resr
          v=resi
       else
-         alim=0.0
-         blim=dsqrt(2.01*dble(w))
+         alim=limsingsm
+         blim=dsqrt(2.0D0*dble(w))+0.1
          spoints(1)=dsqrt(2.0*dble(w))
          CALL DQAGP(Fpd_re,alim,blim,npts2,spoints,epsabs,epsrel,resr,
      *        abserr,neval,ier,nlimit,4000,last,iwork,work)
@@ -84,8 +88,12 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          v=v+resi
       endif
       if(dimag(zaa).LT.0.AND.dble(w).GT.0) then
-         Alim=-1.0
-         Blim=1.0
+c         Alim=-1.0
+c         Blim=1.0
+c         if(nf.eq.0) then
+            Alim=-1.0+limsingsm
+            Blim=1.0-limsingsm
+c         endif
          CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
      *        neval,ier, nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
@@ -95,8 +103,12 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          u=u-resr
          v=v-resi
       else if(dimag(zaa).EQ.0.0d0.AND.dble(w).GT.0) then
-         Alim=-1.0
-         Blim=1.0
+c         Alim=-1.0
+c         Blim=1.0
+c         if(nf.eq.0) then
+            Alim=-1.0+limsingsm
+            Blim=1.0-limsingsm
+c         endif
          CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
      *        neval,ier, nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
@@ -140,15 +152,15 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       zr=cdsqrt(4.0*w-2.0*s)
       z1=0.5*(zbb+zr)
       z2=0.5*(zbb-zr)
-c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       Gm=weidGm(z1,z2,mf)
-      if ((zabs(z1).LT.limsingsm).and.(zabs(z2).LT.limsingsm)) then
-         Fpd=0.0
-      else
-         xbr=dsqrt(bbi*2.0*s)
-         JR0=DBESJ0(XBR)
-         Fpd=dexp(-s)*Jr0**2*Gm*s**((nf-1)/2)
-      endif
+c      if ((zabs(z1).LT.limsingsm).and.(zabs(z2).LT.limsingsm)) then
+c         Fpd=0.0
+c      else
+      xbr=dsqrt(bbi*2.0*s)
+      JR0=DBESJ0(XBR)
+      Fpd=dexp(-s)*Jr0**2*Gm*s**((nf-1)*0.5d0)
+c      endif
+c      write (*,*),s,dble(Fpd),dimag(Fpd)
       return
       end function Fpd
 
@@ -162,7 +174,7 @@ c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       i=dcmplx(0,1)
       call wofzwh2(z1,z2,GZ0,m,flag)
       weidGm=i*sqrtpi*GZ0/(z1-z2)
-      if (m.gt.0) then
+      if (m.gt.1) then
          do 20 k=2,m
             weidGm=weidGm+1.0/sqrtpi*dgamma((m-k+1)*0.5d0)*
      *           (z1**(k-1)-z2**(k-1))/(z1-z2)
@@ -188,13 +200,16 @@ c      write (*,*) s, dble(z1), dimag(z1),dble(z2),dimag(z2)
       end function resFpd_im
 
       double complex function resFpd(mu)
-      double precision mu,xbr,xbi,Jr0,Ji0,zbb,bbi,sqrtpi,fnu
+      double precision mu,xbr,xbi,Jr0,Ji0,zbb,bbi,sqrtpi,nu
       integer mf,nf,ierr,nz
-      double complex zaa,i,w,xb,J0
+      double complex zaa,i,w,xb,J0,sqw,a
       external cbj0
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       parameter (sqrtpi = 1.77245385090552)
-      xb=2.0*cdsqrt(bbi*(1-mu**2)*w)
+      nu=1.0d0-mu**2
+      sqw=cdsqrt(w)
+      a=(mu*sqw+0.5*zbb)
+      xb=2.0*dsqrt(bbi*nu)*sqw
 c      xbr=dble(xb)
 c      xbi=dimag(xb)
 c      fnu=0.0
@@ -202,9 +217,8 @@ c      fnu=0.0
 c      call zbesj(xbr,xbi,fnu,1,1,Jr0,Ji0,nz,ierr)
 c      J0=dcmplx(Jr0,Ji0)
       call cbj0(xb,J0)
-      resFpd=i*2.0D0**(0.5D0*(nf+3))*J0**2.0D0*sqrtpi*w**(nf*0.5D0)*
-     *     (1-mu**2)**((nf-1)*0.5D0)*(mu*cdsqrt(w)+0.5*zbb)**mf*
-     *     cdexp(-(mu*cdsqrt(w)+0.5D0*zbb)**2-2.0D0*(1.0D0-mu*mu)*w)
+      resFpd=i*2.0D0**(0.5D0*(nf+3))*J0**2*sqrtpi*sqw**nf*
+     *     nu**((nf-1)*0.5D0)*a**mf*cdexp(-a**2-2.0D0*nu*w)
 c     resFpd=i*2**(0.5*(nf+3))*J0**2*sqrtpi*w**(nf*0.5)*
 c     *     zexp(-(mu*zsqrt(w)+0.5*zbb)**2-2.0*(1.0-mu*mu)*w)
 c      if(nf.gt.1) then
@@ -213,6 +227,7 @@ c      endif
 c      if(mf.gt.0) then
 c         resFpd=resFpd*(mu*zsqrt(w)+0.5*zbb)**mf
 c      endif
+c      write(*,*) mu, dble(resFpd),dimag(resFpd)
       return
       end function resFpd
 

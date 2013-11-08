@@ -172,21 +172,22 @@ c***first executable statement  dqagi
       result = 0.0d+00
       abserr = 0.0d+00
       if(limit.lt.1.or.lenw.lt.limit*4) go to 10
-c
-c         prepare call for dqagie.
-c
+c     
+c     prepare call for dqagie.
+c     
       l1 = limit+1
       l2 = limit+l1
       l3 = limit+l2
-c
+c     
       call dqagie(f,bound,inf,epsabs,epsrel,limit,result,abserr,
-     *  neval,ier,work(1),work(l1),work(l2),work(l3),iwork,last)
-c
-c         call error handler if necessary.
-c
-       lvl = 0
-10    if(ier.eq.6) lvl = 1
-      if(ier.ne.0) return
+     *     neval,ier,work(1),work(l1),work(l2),work(l3),iwork,last)
+c     
+c     call error handler if necessary.
+c     
+      lvl = 0
+ 10   if(ier.eq.6) lvl = 1
+      if(ier.ne.0) write (*,*) "dqagi: ier=",ier
+      return
 c     call xerror(26habnormal return from dqagi,26,ier,lvl)
-c      return
+c     return
       end
