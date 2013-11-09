@@ -27,14 +27,14 @@ C
       implicit none
       DOUBLE PRECISION xi,yi,bi,zb,z1,z2,u,v, 
      *     epsabs,epsrel,alim,blim,abserr,
-     *     work(4000),resr,resi,zbb,bbi,limsingsm
+     *     work(4000),resr,resi,zbb,bbi,limsingsm,limsinglg
       double complex zaa,za,i,w
       INTEGER n,m,np1,nu,j,l,iwork(1000),ier,neval
       LOGICAL A, B, FLAG
       integer nlimit,mf,nf,last,npts2
 c      PARAMETER (nlimit=10000,limsingsm=1.0e-8,npts2=3,
 c     *     epsrel=1.0e-2,epsabs=1.0e-6)
-      PARAMETER (limsingsm=1.0e-12,npts2=3,
+      PARAMETER (limsingsm=1.0e-12,npts2=3,limsinglg=1.0e-6,
      *     epsrel=1.0e-4,epsabs=1.0e-8)
       double precision fpd_re,fpd_im,spoints(3)
       EXTERNAL fpd_re,fpd_im,resfpd_im,resfpd_re
@@ -55,7 +55,13 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       w=zbb**2/4-zaa
       nlimit=1000
       ier=0
-      if(dabs(dimag(w)).GT.limsingsm.OR.dble(w).LT.0) then
+      if(dabs(dimag(w)).LT.limsingsm) then
+c         write (*,*) "w=",w
+         zaa=dble(za)+i*epsrel
+         w=zbb**2/4-zaa
+c         w=dble(w)+i*limsingsm*2
+      endif
+c      if(dabs(dimag(w)).GT.limsingsm.OR.dble(w).LT.0) then
          alim=limsingsm
          CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
      *        nlimit,4000,last,iwork,work)
@@ -65,28 +71,28 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          if(ier.ne.0) goto 100
          u=resr
          v=resi
-      else
-         alim=limsingsm
-         blim=dsqrt(2.0D0*dble(w))+0.1
-         spoints(1)=dsqrt(2.0*dble(w))
-         CALL DQAGP(Fpd_re,alim,blim,npts2,spoints,epsabs,epsrel,resr,
-     *        abserr,neval,ier,nlimit,4000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         CALL DQAGP(Fpd_im,alim,blim,npts2,spoints,epsabs,epsrel,resi,
-     *        abserr,neval,ier,nlimit,4000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         u=resr;
-         v=resi;
-         alim=blim;
-         CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
-     *        nlimit,4000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
-     *        nlimit,4000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         u=u+resr
-         v=v+resi
-      endif
+c      else
+c         alim=limsingsm
+c         blim=dsqrt(2.0D0*dble(w))+0.1
+c         spoints(1)=dsqrt(2.0*dble(w))
+c         CALL DQAGP(Fpd_re,alim,blim,npts2,spoints,epsabs,epsrel,resr,
+c     *        abserr,neval,ier,nlimit,4000,last,iwork,work)
+c         if(ier.ne.0) goto 100
+c         CALL DQAGP(Fpd_im,alim,blim,npts2,spoints,epsabs,epsrel,resi,
+c     *        abserr,neval,ier,nlimit,4000,last,iwork,work)
+c         if(ier.ne.0) goto 100
+c         u=resr;
+c         v=resi;
+c         alim=blim;
+c         CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
+c     *        nlimit,4000,last,iwork,work)
+c         if(ier.ne.0) goto 100
+c         CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
+c     *        nlimit,4000,last,iwork,work)
+c         if(ier.ne.0) goto 100
+c         u=u+resr
+c         v=v+resi
+c      endif
       if(dimag(zaa).LT.0.AND.dble(w).GT.0) then
 c         Alim=-1.0
 c         Blim=1.0
@@ -165,23 +171,81 @@ c      write (*,*),s,dble(Fpd),dimag(Fpd)
       end function Fpd
 
       double complex function weidGm(z1,z2,m)
-      double complex z1,z2,Gm,GZ0,i
-      double precision limsingsm,sqrtpi
+      double complex z1,z2,Gm,GZ0,i,zb,zd,z1r,z2r
+      double precision limsingsm,sqrtpi,limsinglg
       integer m,k
-      parameter (limsingsm = 1.0e-12,sqrtpi = 1.77245385090552)
+      parameter (limsingsm = 1.0e-12,
+     *     limsinglg=1.0e-6,sqrtpi = 1.77245385090552)
       external wofzwh2
       logical flag
       i=dcmplx(0,1)
-      call wofzwh2(z1,z2,GZ0,m,flag)
-      weidGm=i*sqrtpi*GZ0/(z1-z2)
+      zd=0.5d0*(z1-z2)
+      zb=0.5d0*(z1+z2)
+      if (cdabs(zd).lt.limsingsm) zd=limsingsm
+      z1r=zb+zd
+      z2r=zb-zd
+c      if (cdabs(zd).lt.0.2) then
+c         zb=0.5d0*(z1+z2)
+c         call wofzwh(zb,GZ0,flag)
+c         weidGm=i*sqrtpi*GZ0*(-2.d0*zb**(m+1))
+c         if (m.gt.0) then
+c            weidGm=weidGm+i*sqrtpi*GZ0*(m*zb**(m-1))
+c            if (m.gt.2) then
+c               do 70 k=1,m-1
+c                  weidGm=weidGm+m/sqrtpi*
+c     *                 dgamma((m-k)*0.5d0)*zb**(k-1)
+c 70            continue
+c            endif
+c         endif
+c         do 80 k=1,m+1
+c            weidGm=weidGm-2.d0/sqrtpi*
+c     *           dgamma((m-k+2)*0.5d0)
+c     *           *zb**(k-1)
+c 80      continue
+c      else
+      call wofzwh2(z1r,z2r,GZ0,m,flag)
+      weidGm=i*0.5d0*sqrtpi*GZ0/zd
       if (m.gt.1) then
          do 20 k=2,m
-            weidGm=weidGm+1.0/sqrtpi*dgamma((m-k+1)*0.5d0)*
-     *           (z1**(k-1)-z2**(k-1))/(z1-z2)
+            weidGm=weidGm+0.5d0/sqrtpi*dgamma((m-k+1)*0.5d0)*
+     *           ((z1r)**(k-1)-(z2r)**(k-1))/zd
  20      continue
-      endif 
+      endif
+c     endif
       return
       end function weidGm
+
+
+c      double complex function weidGm(z1,z2,m)
+c      double complex weidZm,z1,z2,zb,zd
+c      double precision limsingsm
+c      integer m
+c      parameter (limsingsm = 1.0e-12)
+c      external weidZm
+c      zb=0.5d0*(z1+z2)
+c      zd=0.5d0*(z1-z2)
+c      if(cdabs(zd).LT.limsingsm) zd=limsingsm
+c      weidGm=(weidZm(zb+zd,m)-weidZm(zb-zd,m))/2/zd
+c      return
+c      end function weidGm
+
+c      double complex function weidZm(z,m)
+c      double complex z,i,Z0
+c      double precision xi,yi,u,v,flag,dgamma,sqrtpi
+c      integer m,k
+c      external wofzwh,dgamma
+c      parameter (sqrtpi = 1.77245385090552)
+c      i=cmplx(0,1)
+c      call wofzwh(z,Z0,flag)
+c      weidZm=i*sqrtpi*Z0*z**m
+c      if (m.gt.0) then
+c         do 20 k=1,m
+c            weidZm=weidZm+1.0/sqrtpi*dgamma((m-k+1)*0.5d0)*z**(k-1)
+c 20      continue
+c      end if 
+c      return
+c      end function weidZm
+
 
       double precision function resFpd_re(s)
       double complex resFpd
