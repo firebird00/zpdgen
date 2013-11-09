@@ -46,61 +46,42 @@ C
          w=zbb**2/4-zaa
          bbi=ky**2;
          omsi=-ky;
-         if(dabs(dimag(w)).GT.limsinglg.OR.dble(w).LT.0) then
-            Alim=0.0
-            CALL DQAGI(Fepspd_re,alim,1,epsabs,epsrel,resr,abserr,neval,
-     *           ier,nlimit,40000,last,iwork,work)
-            if(ier.ne.0) goto 100
-            CALL DQAGI(Fepspd_im,alim,1,epsabs,epsrel,resi,abserr,neval,
-     *           ier,nlimit,40000,last,iwork,work)
-            if(ier.ne.0) goto 100
-            u=resr+1.0+1.0/tau;
-            v=resi;
-         else
-            alim=0.0
-            blim=dsqrt(2.0d0*dble(w))+0.1
-            spoints(1)=dsqrt(2.0*dble(w))
-            CALL DQAGP(Fepspd_re,alim,blim,npts2,spoints,epsabs,epsrel,
-     *           resr,abserr,neval,ier,nlimit,40000,last,iwork,work)
-            if(ier.ne.0) goto 100
-            CALL DQAGP(Fepspd_im,alim,blim,npts2,spoints,epsabs,epsrel,
-     *           resi,abserr,neval,ier,nlimit,40000,last,iwork,work)
-            if(ier.ne.0) goto 100
-            u=resr+1.0+1.0/tau;
-            v=resi;
-            alim=blim;
-            CALL DQAGI(Fepspd_re,alim,1,epsabs,epsrel,resr,abserr,neval,
-     *           ier,nlimit,40000,last,iwork,work)
-            if(ier.ne.0) goto 100
-            CALL DQAGI(Fepspd_im,alim,1,epsabs,epsrel,resi,abserr,neval,
-     *           ier,nlimit,40000,last,iwork,work)
-            if(ier.ne.0) goto 100
-            u=u+resr
-            v=v+resi
+         if(dabs(dimag(w)).LT.limsingsm) then
+            zaa=dble(zaa)+i*epsrel
+            w=zbb**2/4-zaa
          endif
-      endif
-      if(omi.LT.0.AND.dble(w).GT.0) then
-         Alim=-1.0+limsingsm
-         Blim=1.0-limsingsm
-         CALL DQAG(resFepspd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
-     *        neval,ier, nlimit,40000,last,iwork,work)
+         Alim=0.0
+         CALL DQAGI(Fepspd_re,alim,1,epsabs,epsrel,resr,abserr,neval,
+     *        ier,nlimit,40000,last,iwork,work)
          if(ier.ne.0) goto 100
-         CALL DQAG(resFepspd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
-     *        neval,ier,nlimit,40000,last,iwork,work)
+         CALL DQAGI(Fepspd_im,alim,1,epsabs,epsrel,resi,abserr,neval,
+     *        ier,nlimit,40000,last,iwork,work)
          if(ier.ne.0) goto 100
-         u=u-resr
-         v=v-resi
-      else if(omi.EQ.0.AND.dble(w).GT.0) then
-         Alim=-1.0+limsingsm
-         Blim=1.0-limsingsm
-         CALL DQAG(resFepspd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
-     *        neval,ier, nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         CALL DQAG(resFepspd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
-     *        neval,ier,nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         u=u-0.5*resr
-         v=v-0.5*resi
+         u=resr+1.0+1.0/tau;
+         v=resi;
+         if(omi.LT.0.AND.dble(w).GT.0) then
+            Alim=-1.0+limsingsm
+            Blim=1.0-limsingsm
+            CALL DQAG(resFepspd_re,alim,blim,epsabs,epsrel,6,resr,
+     *           abserr,neval,ier, nlimit,40000,last,iwork,work)
+            if(ier.ne.0) goto 100
+            CALL DQAG(resFepspd_im,alim,blim,epsabs,epsrel,6,resi,
+     *           abserr,neval,ier,nlimit,40000,last,iwork,work)
+            if(ier.ne.0) goto 100
+            u=u-resr
+            v=v-resi
+         else if(omi.EQ.0.AND.dble(w).GT.0) then
+            Alim=-1.0+limsingsm
+            Blim=1.0-limsingsm
+            CALL DQAG(resFepspd_re,alim,blim,epsabs,epsrel,6,resr,
+     *           abserr,neval,ier, nlimit,40000,last,iwork,work)
+            if(ier.ne.0) goto 100
+            CALL DQAG(resFepspd_im,alim,blim,epsabs,epsrel,6,resi,
+     *           abserr,neval,ier,nlimit,40000,last,iwork,work)
+            if(ier.ne.0) goto 100
+            u=u-0.5*resr
+            v=v-0.5*resi
+         endif
       endif
       RETURN
 *
@@ -140,18 +121,13 @@ c      write (*,*) "bbi:",bbi
       zr=cdsqrt(4.0*w-2.0*s)
       z1=0.5*(zbb+zr)
       z2=0.5*(zbb-zr)
-c      if ((cdabs(z1).LT.limsingsm).and.(cdabs(z2).LT.limsingsm)) then
-c         Fepspd=0.0
-c      else
-         G0=weidGm(z1,z2,0)
-         G2=weidGm(z1,z2,2)
-         xbr=dsqrt(bbi*2.0*s)
-         jr0=dbesj0(xbr)
-         Fepspd=Jr0**2*dexp(-s)*(
-     *        (om-omsi*(1.0+(s-1.5)*etai))*G0-omsi*etai*G2
-     *        )/omdi
-c      end if
-c      write (*,*) s, dble(G0), dimag(G0),dble(G2),dimag(G2)
+      G0=weidGm(z1,z2,0)
+      G2=weidGm(z1,z2,2)
+      xbr=dsqrt(bbi*2.0*s)
+      jr0=dbesj0(xbr)
+      Fepspd=Jr0**2*dexp(-s)*(
+     *     (om-omsi*(1.0+(s-1.5)*etai))*G0-omsi*etai*G2
+     *     )/omdi
       return
       end function Fepspd
 
@@ -180,11 +156,7 @@ c      write (*,*) s, dble(G0), dimag(G0),dble(G2),dimag(G2)
       common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
       parameter (limsinglg = 1.0e-5, sqrtpi = 1.77245385090552)
       xb=2.0*cdsqrt(bbi*(1.0d0-mu**2)*w)
-c      xbr=dble(xb)
-c      xbi=dimag(xb)
-c      fnu=0.0
       i=dcmplx(0,1)
-c      call zbesj(xbr,xbi,fnu,1,1,Jr0,Ji0,nz,ierr)
       call cbj0(xb,J0)
       resFepspd=i*4.0*J0**2*sqrtpi/omdi*cdsqrt(w)*
      *     cdexp(-(mu*cdsqrt(w)+0.5*zbb)**2-2.0*(1.0-mu**2)*w)*
@@ -287,38 +259,19 @@ Cf2py double complex dimension(numza) :: res
       w=zbb**2/4-zaa
       nlimit=10000
       ier=0
-      if(dabs(dimag(w)).GT.limsingsm.OR.dble(w).LT.0) then
-         alim=0.0
-         CALL DQAGI(Fsigpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,
-     *        ier,nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         CALL DQAGI(Fsigpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,
-     *        ier,nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         u=resr
-         v=resi
-      else
-         alim=0.0
-         blim=dsqrt(2.01*dble(w))
-         spoints(1)=dsqrt(2.0*dble(w))
-         CALL DQAGP(Fsigpd_re,alim,blim,npts2,spoints,epsabs,epsrel,
-     *        resr,abserr,neval,ier,nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         CALL DQAGP(Fsigpd_im,alim,blim,npts2,spoints,epsabs,epsrel,
-     *        resi,abserr,neval,ier,nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         u=resr;
-         v=resi;
-         alim=blim;
-         CALL DQAGI(Fsigpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,
-     *        ier,nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         CALL DQAGI(Fsigpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,
-     *        ier,nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         u=u+resr;
-         v=v+resi;
+      if(dabs(dimag(w)).LT.limsingsm) then
+         za=dble(za)+i*epsrel
+         w=zbb**2/4-zaa
       endif
+      alim=0.0
+      CALL DQAGI(Fsigpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,
+     *     ier,nlimit,40000,last,iwork,work)
+      if(ier.ne.0) goto 100
+      CALL DQAGI(Fsigpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,
+     *     ier,nlimit,40000,last,iwork,work)
+      if(ier.ne.0) goto 100
+      u=resr
+      v=resi
       if(dimag(zaa).LT.0.AND.dble(w).GT.0) then
          Alim=-1.0
          Blim=1.0
