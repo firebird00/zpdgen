@@ -26,22 +26,26 @@ C
 
       implicit none
       DOUBLE PRECISION xi,yi,bi,zb,z1,z2,u,v, 
-     *     epsabs,epsrel,alim,blim,abserr,
-     *     work(40000),resr,resi,zbb,bbi,limsingsm
+     *     epsabs,epsrel,alim,blim,abserr,limsinglg,
+     *     work(4000),resr,resi,zbb,bbi,limsingsm
       double complex zaa,za,i,w
-      INTEGER n,m,np1,nu,j,l,iwork(10000),nweid,nw,neval
+      INTEGER n,m,np1,nu,j,l,iwork(1000),nweid,nw,neval
       LOGICAL A, B, FLAG
       integer nlimit,mf,nf,last,npts2,spoints(3),ier
-      PARAMETER (nlimit=10000,
-     *     epsrel=1.0e-2,epsabs=1.0e-6,npts2=3,
-     *     limsingsm=1.0e-8)
+      PARAMETER (nlimit=1000,
+     *     epsrel=1.0e-4,epsabs=1.0e-8,npts2=3,
+     *     limsingsm=1.0e-12,limsinglg=1.0e-6)
       double precision fpd_re,fpd_im,resfpd_re,resfpd_im
       EXTERNAL fpd_re,fpd_im,resfpd_im,resfpd_re
       external dqagi,dqagp,dqag,prerr
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       common /nweid/ nweid
       FLAG = .FALSE.
-      i=cmplx(0,1)
+      if(n.eq.0) then
+         write (*,*) "n must be >=1!!"
+         goto 100
+      endif
+      i=dcmplx(0,1)
       nweid=nw
       za=XI+i*YI
       zaa=za
@@ -50,60 +54,30 @@ C
       mf=m
       nf=n
       w=zbb**2/4-zaa
-      if(dabs(dimag(w)).GT.limsingsm.OR.dble(w).LT.0) then
-      Alim=0.0
-         CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
-     *        nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
-     *        nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         u=resr;
-         v=resi;
-      else
-         alim=0.0
-         blim=dsqrt(2.01*dble(w))
-         spoints(1)=dsqrt(2.0*dble(w))
-         CALL DQAGP(Fpd_re,alim,blim,npts2,spoints,epsabs,epsrel,resr,
-     *        abserr,neval,ier,nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         CALL DQAGP(Fpd_im,alim,blim,npts2,spoints,epsabs,epsrel,resi,
-     *        abserr,neval,ier,nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         u=resr;
-         v=resi;
-         alim=blim;
-         CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
-     *        nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
-     *        nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         u=u+resr;
-         v=v+resi;
+      if(dabs(dimag(w)).LT.limsingsm) then
+         zaa=dble(za)+i*epsrel
+         w=zbb**2/4-zaa
       endif
+      Alim=0.0
+      CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
+     *     nlimit,4*nlimit,last,iwork,work)
+      if(ier.ne.0) goto 100
+      CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
+     *     nlimit,4*nlimit,last,iwork,work)
+      if(ier.ne.0) goto 100
+      u=resr;
+      v=resi;
       if(dimag(zaa).LT.0.AND.dble(w).GT.0) then
          Alim=-1.0
          Blim=1.0
          CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
-     *        neval,ier, nlimit,40000,last,iwork,work)
+     *        neval,ier, nlimit,4*nlimit,last,iwork,work)
          if(ier.ne.0) goto 100
          CALL DQAG(resFpd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
-     *        neval,ier,nlimit,40000,last,iwork,work)
+     *        neval,ier,nlimit,4*nlimit,last,iwork,work)
          if(ier.ne.0) goto 100
          u=u-resr
          v=v-resi
-      else if(dimag(zaa).EQ.0.AND.dble(w).GT.0) then
-         Alim=-1.0
-         Blim=1.0
-         CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
-     *        neval,ier, nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         CALL DQAG(resFpd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
-     *        neval,ier,nlimit,40000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         u=u-0.5*resr
-         v=v-0.5*resi
       endif
       RETURN
 *
@@ -130,23 +104,19 @@ C
       end function Fpd_im
 
       double complex function Fpd(s)
-      double precision s,limsingsm,xbr,Jr0,Ji0,zbb,bbi
+      double precision s,limsingsm,xbr,Jr0,zbb,bbi
       integer mf,nf,ierr,nz
-      double complex z1,z2,zaa,Gm,weidGm,w
+      double complex z1,z2,zaa,Gm,weidGm,w,zr
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       external weidGm
-      parameter (limsingsm = 1.0e-8)
-      z1=0.5*(zbb+zsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
-      z2=0.5*(zbb-zsqrt(zbb**2-2.0*(s**2+2.0*zaa)))
+      parameter (limsingsm = 1.0e-12)
+      zr=cdsqrt(4.0*w-2.0*s)
+      z1=0.5*(zbb+zr)
+      z2=0.5*(zbb-zr)
       Gm=weidGm(z1,z2,mf)
-      if ((zabs(z1).LT.limsingsm).and.(zabs(z2).LT.limsingsm)) then
-         Fpd=0.0
-      else
-         xbr=dble(bbi*2.0)**(0.5)*s
-c         call zbesj(xbr,0.0,0,1,1,Jr0,Ji0,nz,ierr)
-         JR0=DBESJ0(XBR)
-         Fpd=2.0*dexp(-s**2)*Jr0**2*Gm*s**nf
-      endif
+      xbr=dsqrt(bbi*2.0*s)
+      JR0=DBESJ0(XBR)
+      Fpd=dexp(-s)*Jr0**2*Gm*s**((nf-1)*0.5d0)
       return
       end function Fpd
 
