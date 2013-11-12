@@ -6,28 +6,28 @@ libgpdf_a_INCLUDES=$(all_includes)
 EXTRA_DIST=gpdf.py
 include_HEADERS=gpdf.h
 noinst_HEADERS=doxy.cfg
-SUBDIRS = amos quadp
+SUBDIRS = quadp
 ACLOCAL_AMFLAGS = -I m4
 
 noinst_PROGRAMS = ftest ctest test
 
 ftest_SOURCES = ftest.f
-ftest_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
+ftest_LDADD = -L./ -L./quadp -lgpdf -lquadp -lgfortran
 ftest_CFLAGS = -I./
 ftest_FFLAGS = -I./ -fPIC -fimplicit-none -fbounds-check
-ftest_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
+ftest_DEPENDENCIES = ./libgpdf.a
 
 test_SOURCES = test.f
-test_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
+test_LDADD = -L./ -L./quadp -lgpdf -lquadp -lgfortran
 test_CFLAGS = -I./
 test_FFLAGS = -I./ -fPIC -fimplicit-none -fbounds-check
-test_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
+test_DEPENDENCIES = ./libgpdf.a
 
 ctest_SOURCES = ctest.c
-ctest_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
+ctest_LDADD = -L./ -L./quadp -lgpdf -lquadp -lgfortran
 ctest_CFLAGS = -I./
 ctest_FFLAGS = -I./ -fPIC -fimplicit-none -fbounds-check
-ctest_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
+ctest_DEPENDENCIES = ./libgpdf.a
 
 if ZPDGEN_PYTHON_ON
 bin_SCRIPTS=inmzpd.pyf epszpd.pyf
