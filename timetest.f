@@ -14,7 +14,7 @@
       i=cmplx(0,1)
       zamin=-6.0-6.05*i
       zamax=6.0+5.95*i
-      dza=0.1+0.1*i
+      dza=0.5+0.5*i
       zb=0.0
       b=0.09
       numx=nint(dble(zamax-zamin)/dble(dza))
