@@ -5,14 +5,14 @@
      *     abserr,bbi,work(40000),resr,resi,zbb
       double complex zaa,i,w,om
       double precision resFepspd_im,resFepspd_re,pars(5),
-     *     Fepskur_im,Fepskur_re
+     *     Fepskur_im,Fepskur_re,limsingsm
       external Fepskur_re, Fepskur_im, resFepspd_im,resFepspd_re
       integer nlimit,last,neval,ier,iwork(10000)
       logical flag
       common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
       PARAMETER (MINOMDLIM = -1e-6,
-     *     nlimit=10000,epsrel=1.0e-2,epsabs=1.0e-6,
-     *     sqrttwo =1.414213562373095 )
+     *     nlimit=10000,epsrel=1.0e-4,epsabs=1.0e-8,
+     *     sqrttwo =1.414213562373095,limsingsm=1.0e-12)
       FLAG=.FALSE.
       om=cmplx(omr,omi)
       omdi=pars(1)
@@ -20,7 +20,7 @@
       tau=pars(3)
       ky=pars(4)
       kpar=pars(5)
-
+      
       if(omdi.LT.MINOMDLIM) then
          zaa=-cmplx(omr,omi)/omdi
          zbb=kpar*sqrttwo/omdi
@@ -63,8 +63,8 @@
       integer neval,ier,nlimit,last,iwork(10000)
       double precision alim,blim,epsabs,epsrel,resr,abserr,work(40000)
       common /fkurcom/ muf
-      epsrel = 1.0e-2
-      epsabs = 1.0e-6
+      epsrel = 1.0e-4
+      epsabs = 1.0e-8
       muf=mu
       nlimit=10000
       Alim=0.0
@@ -81,8 +81,8 @@
       integer neval,ier,nlimit,last,iwork(10000)
       double precision alim,blim,epsabs,epsrel,resi,abserr,work(40000)
       common /fkurcom/ muf
-      epsrel = 1.0e-2
-      epsabs = 1.0e-6
+      epsrel = 1.0e-4
+      epsabs = 1.0e-8
       muf=mu
       nlimit=10000
       Alim=0.0
@@ -164,24 +164,22 @@ C  U, V, FLAG  ARE THE OUTPUT-PARAMETERS
 C
 C
       implicit none
-      DOUBLE PRECISION xi,yi,bi,zb,z1,z2,c,daux,x,y,xabs,yabs,u,v, 
-     *     factor,rmaxreal, rmaxexp, rmaxgoni, h,h2, kapn, qlambda,
-     *     qrho, rx,ry,sx,sy,tx,ty, u1, u2, v1,v2,xabsq,xaux,xquad,xsum,
-     *     yquad, ysum,epsabs,epsrel,alim,blim,key,result,abserr,
-     *     limit,lenw, work(40000),resr,resi,zbb,bbi
+      DOUBLE PRECISION xi,yi,bi,zb,z1,z2,u,v,abserr,epsabs,epsrel,
+     *     limit,lenw, work(40000),resr,resi,zbb,bbi,limsingsm,alim,blim
       double complex zaa,za,i,w
       INTEGER n,m,np1,nu,j,l,iwork(10000),neval,ier
       LOGICAL A, B, FLAG
       integer nlimit,mf,nf,last
-      PARAMETER (FACTOR   = 1.12837916709551257388D0,
-     *     RMAXREAL = 0.5D+154,
-     *     RMAXEXP  = 708.503061461606D0,
-     *     RMAXGONI = 3.53711887601422D+15,
+      PARAMETER (limsingsm=1.0e-12,
      *     nlimit=10000)
       double precision fkur_re,fkur_im
       EXTERNAL DQAG, fkur_re,fkur_im,resfpd_im,resfpd_re
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       FLAG = .FALSE.
+      if(n.eq.0) then
+         write (*,*) "n must be >=1!!"
+         goto 100
+      endif
       i=cmplx(0,1)
       za=XI+i*YI
       zaa=za
@@ -190,8 +188,12 @@ C
       mf=m
       nf=n
       w=zbb**2/4-zaa
-      epsrel = 1.0e-2
-      epsabs = 1.0e-6
+      epsrel = 1.0e-4
+      epsabs = 1.0e-8
+      if(dabs(dimag(w)).LT.limsingsm) then
+         zaa=dble(zaa)+i*epsrel
+         w=zbb**2/4-zaa
+      endif
       Alim=-1.0
       Blim=1.0
       CALL DQAG(Fkur_re,alim,blim,epsabs,epsrel,6,resr,abserr,
@@ -227,48 +229,31 @@ C
       END
 
       double precision function Fkur_re(mu)
-      double complex Fkur_int_re,zaa,w
+      double complex Fkur_int_re,zaa,w,i
       external Fkur_int_re
-      double precision mu,muf,zbb,bbi,limsinglg
-      integer neval,ier,nlimit,last,iwork(10000),mf,nf,npts2,spoints(3)
+      double precision mu,muf,zbb,bbi,limsinglg,limsingsm
+      integer neval,ier,nlimit,last,iwork(10000),mf,nf
       double precision alim,blim,epsabs,epsrel,resr,abserr,work(40000)
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       common /fkurcom/ muf
-      PARAMETER (limsinglg=1.0e-5)
-      epsrel = 1.0e-2
-      epsabs = 1.0e-6
+      PARAMETER (limsinglg=1.0e-5,limsingsm=1.0e-12)
+      epsrel = 1.0e-4
+      epsabs = 1.0e-8
+      i=dcmplx(0,1)
       muf=mu
       nlimit=10000
-      if(dabs(dimag(w)).GT.limsinglg.OR.dble(w).LT.0) then
-         Alim=0.0
-         CALL DQAGI(Fkur_int_re,alim,1,epsabs,epsrel,resr,abserr,neval,
-     *        ier,nlimit,40000,last,iwork,work)
-         Fkur_re=resr
-         if (ier.GT.0) then
-            write(*,*) "problem in Fkur_Re (in if):"
-            write (*,*) "w:", w, "ier:", ier
-         end if
-      else
-         alim=0.0
-         blim=dsqrt(1.01*dble(w))
-         spoints(1)=dsqrt(dble(w))
-         npts2=3
-         CALL DQAGP(Fkur_int_re,alim,blim,npts2,spoints,epsabs,epsrel,
-     *        resr,abserr,neval,ier,nlimit,40000,last,iwork,work)
-         if (ier.GT.0) then
-            write(*,*) "problem in Fkur_Re (in else, DQAGP):"
-            write (*,*) "w:", w, "ier:", ier
-         end if
-         Fkur_re=resr;
-         alim=blim;
-         CALL DQAGI(Fkur_int_re,alim,1,epsabs,epsrel,resr,abserr,neval,
-     *        ier,nlimit,40000,last,iwork,work)
-         Fkur_re=Fkur_re+resr;
-         if (ier.GT.0) then
-            write(*,*) "problem in Fkur_Re (in else, DQAGI):"
-            write (*,*) "w:", w, "ier:", ier
-         end if
+      if(dabs(dimag(w)).LT.limsingsm) then
+         zaa=dble(zaa)+i*epsrel
+         w=zbb**2/4-zaa
       endif
+      Alim=0.0
+      CALL DQAGI(Fkur_int_re,alim,1,epsabs,epsrel,resr,abserr,neval,
+     *     ier,nlimit,40000,last,iwork,work)
+      Fkur_re=resr
+      if (ier.GT.0) then
+         write(*,*) "problem in Fkur_Re (in if):"
+         write (*,*) "w:", w, "ier:", ier
+      end if
       return
       end function Fkur_re
 
@@ -291,8 +276,8 @@ C
       double precision alim,blim,epsabs,epsrel,resi,abserr,work(40000)
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       PARAMETER (limsinglg=1.0e-5)
-      epsrel = 1.0e-2
-      epsabs = 1.0e-6
+      epsrel = 1.0e-4
+      epsabs = 1.0e-8
       muf=mu
       nlimit=10000
       Alim=0.0
@@ -310,7 +295,7 @@ C
          npts2=3
          spoints(1)=dsqrt(dble(w))
          epsrel = 1.0e-4
-         epsabs = 1.0e-12
+         epsabs = 1.0e-8
          CALL DQAGP(Fkur_int_im,alim,blim,npts2,spoints,epsabs,epsrel,
      *        resi,abserr,neval,ier,nlimit,40000,last,iwork,work)
          Fkur_im=resi

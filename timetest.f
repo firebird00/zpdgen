@@ -71,7 +71,7 @@
           call cpu_time(finish)
           dt(lt)=finish-start
           lt=lt+1
-          print '("Time = ",f12.6," seconds.")',finish-start
+          print '("Time = ",f12.6," seconds.")',dt(lt-1)
  20    continue
  50    continue
 
@@ -96,7 +96,7 @@
                yi=dimag(za)
                if(k.LT.4) then
                   call inmkur(xi,yi,zb,b,n,m,u,v,flag)
-                  ttf(lx+1,ly+1)=cmplx(u,v);
+                  ttf(lx+1,ly+1)=dcmplx(u,v);
                else if (k.EQ.4) then
                   call inmkur(xi,yi,zb,b,1,0,u,v,flag)
                   i10=cmplx(u,v)
@@ -116,7 +116,7 @@
       call cpu_time(finish)
       dt(lt)=finish-start
       lt=lt+1
-      print '("Time = ",f12.6," seconds.")',lt
+      print '("Time = ",f12.6," seconds.")',dt(lt-1)
  40         continue
       stop
       end

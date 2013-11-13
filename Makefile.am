@@ -1,5 +1,5 @@
 lib_LIBRARIES = libgpdf.a
-libgpdf_a_SOURCES = pldisp_utils.c pldisp_specfun.c wofzh.f wofzwh16.f wofzwh8.f wofzwh4.f rpolyev.f inmzpd.f epszpd.f inmkur.f utils.f
+libgpdf_a_SOURCES = wofzmw.f wofzh.f wofzwh16.f wofzwh8.f wofzwh4.f cpolyev.f inmzpd.f epszpd.f inmkur.f utils.f cbj0.f
 libgpdf_a_CFLAGS = -DH5_USE_18_API -fPIC -I./
 libgpdf_a_FFLAGS = -I./ -fPIC -fimplicit-none
 libgpdf_a_INCLUDES=$(all_includes)
@@ -9,19 +9,13 @@ noinst_HEADERS=doxy.cfg
 SUBDIRS = amos quadp
 ACLOCAL_AMFLAGS = -I m4
 
-noinst_PROGRAMS = timetest test
+noinst_PROGRAMS = timetest
 
 timetest_SOURCES = timetest.f
 timetest_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
 timetest_CFLAGS = -I./
 timetest_FFLAGS = -I./ -fimplicit-none
 timetest_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
-
-test_SOURCES = test.c
-test_LDADD = -L./ -L./amos/ -L./quadp -lgpdf -lamos -lquadp -lgfortran
-test_CFLAGS = -I./
-test_FFLAGS = -I./ -fimplicit-none
-test_DEPENDENCIES = ./libgpdf.a ./amos/libamos.a
 
 if ZPDGEN_PYTHON_ON
 bin_SCRIPTS=inmzpd.pyf
