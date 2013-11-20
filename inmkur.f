@@ -122,11 +122,8 @@
       common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
       parameter (sqrtpi = 1.77245385090552)
       xb=2.0*dsqrt(bbi*(1-muf**2))*r
-      xbr=dble(xb)
-      xbi=dimag(xb)
       i=cmplx(0,1)
-      call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
-      J0=cmplx(Jr0,Ji0)
+      call cbj0(xb,J0)
       If(dble(w).ne.0) then
          res=4.0/omdi*J0**2/sqrtpi*r**2/(r-zsqrt(w))/(r+zsqrt(w))*
      *        dexp(-(muf*r+0.5*zbb)**2-2.0*(1.0-muf**2)*r**2)*
@@ -334,11 +331,8 @@ C
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       parameter (limsinglg = 1.0e-5, sqrtpi = 1.77245385090552)
       xb=2.0*dsqrt(bbi*(1-muf**2))*r
-      xbr=dble(xb)
-      xbi=dimag(xb)
       i=cmplx(0,1)
-      call zbesj(xbr,xbi,0,1,1,Jr0,Ji0,nz,ierr)
-      J0=cmplx(Jr0,Ji0)
+      call cbj0(xb,J0)
       If(dble(w).ne.0) then
          res=2.0**(0.5*(nf+3))*J0**2/sqrtpi*r**(nf+1)*
      *        (muf*r+zbb*0.5)**mf*

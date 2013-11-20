@@ -83,4 +83,4 @@ AC_CHECK_HEADERS([stdlib.h])
 AC_FUNC_MALLOC
 
 #AC_CONFIG_FILES([Makefile])
-AC_OUTPUT(Makefile amos/Makefile quadp/Makefile)
+AC_OUTPUT(Makefile quadp/Makefile)

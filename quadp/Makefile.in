@@ -130,7 +130,8 @@ am_libquadp_a_OBJECTS = libquadp_a-dqag.$(OBJEXT) \
 	libquadp_a-dqk41.$(OBJEXT) libquadp_a-dqk51.$(OBJEXT) \
 	libquadp_a-dqk61.$(OBJEXT) libquadp_a-dqpsrt.$(OBJEXT) \
 	libquadp_a-xerror.$(OBJEXT) libquadp_a-dqagp.$(OBJEXT) \
-	libquadp_a-dqagpe.$(OBJEXT)
+	libquadp_a-dqagpe.$(OBJEXT) libquadp_a-i1mach.$(OBJEXT) \
+	libquadp_a-d1mach.$(OBJEXT)
 libquadp_a_OBJECTS = $(am_libquadp_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -292,7 +293,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LIBRARIES = libquadp.a
-libquadp_a_SOURCES = dqag.f  dqage.f  dqagi.f  dqagie.f  dqelg.f dqk15.f  dqk15i.f  dqk21.f  dqk31.f  dqk41.f  dqk51.f  dqk61.f  dqpsrt.f xerror.f dqagp.f dqagpe.f
+libquadp_a_SOURCES = dqag.f  dqage.f  dqagi.f  dqagie.f  dqelg.f dqk15.f  dqk15i.f  dqk21.f  dqk31.f  dqk41.f  dqk51.f  dqk61.f  dqpsrt.f xerror.f dqagp.f dqagpe.f i1mach.f d1mach.f
 libquadp_a_FFLAGS = -fPIC
 all: all-am
 
@@ -472,6 +473,18 @@ libquadp_a-dqagpe.o: dqagpe.f
 
 libquadp_a-dqagpe.obj: dqagpe.f
 	$(AM_V_F77)$(F77) $(libquadp_a_FFLAGS) $(FFLAGS) -c -o libquadp_a-dqagpe.obj `if test -f 'dqagpe.f'; then $(CYGPATH_W) 'dqagpe.f'; else $(CYGPATH_W) '$(srcdir)/dqagpe.f'; fi`
+
+libquadp_a-i1mach.o: i1mach.f
+	$(AM_V_F77)$(F77) $(libquadp_a_FFLAGS) $(FFLAGS) -c -o libquadp_a-i1mach.o `test -f 'i1mach.f' || echo '$(srcdir)/'`i1mach.f
+
+libquadp_a-i1mach.obj: i1mach.f
+	$(AM_V_F77)$(F77) $(libquadp_a_FFLAGS) $(FFLAGS) -c -o libquadp_a-i1mach.obj `if test -f 'i1mach.f'; then $(CYGPATH_W) 'i1mach.f'; else $(CYGPATH_W) '$(srcdir)/i1mach.f'; fi`
+
+libquadp_a-d1mach.o: d1mach.f
+	$(AM_V_F77)$(F77) $(libquadp_a_FFLAGS) $(FFLAGS) -c -o libquadp_a-d1mach.o `test -f 'd1mach.f' || echo '$(srcdir)/'`d1mach.f
+
+libquadp_a-d1mach.obj: d1mach.f
+	$(AM_V_F77)$(F77) $(libquadp_a_FFLAGS) $(FFLAGS) -c -o libquadp_a-d1mach.obj `if test -f 'd1mach.f'; then $(CYGPATH_W) 'd1mach.f'; else $(CYGPATH_W) '$(srcdir)/d1mach.f'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

@@ -131,6 +131,7 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       xbr=dsqrt(bbi*2.0*s)
       JR0=DBESJ0(XBR)
       Fpd=dexp(-s)*Jr0**2*Gm*s**((nf-1)*0.5d0)
+c      write (*,*), s, dble(Fpd), dimag(Fpd)
       return
       end function Fpd
 
@@ -149,7 +150,7 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       if (cdabs(zd).lt.limsingsm) zd=limsingsm
       z1r=zb+zd
       z2r=zb-zd
-      call wofzmw(z1r,z2r,GZ0,m,mw,flag)
+      call wofzmw(z1r,z2r,m,mw,GZ0, flag)
       weidGm=i*0.5d0*sqrtpi*GZ0/zd
       if (m.gt.1) then
          do 20 k=2,m
