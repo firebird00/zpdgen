@@ -1,5 +1,5 @@
 C     EPSZPD
-      subroutine epszpd (omr, omi, pars, u, v, flag)
+      subroutine epszpd (omr, omi, pars, mweid, u, v, flag)
 C     PARAMETER LIST
 C     omr     = REAL      PART OF OM
 C     omi     = IMAGINARY PART OF OM
@@ -24,7 +24,7 @@ C
       double complex zaa,i,w,om
       INTEGER n,m,np1,nu,j,l,iwork(10000),limit
       LOGICAL A, B, FLAG
-      integer nlimit,mf,nf,last,neval,ier,npts2
+      integer nlimit,mf,nf,last,neval,ier,npts2,mw,mweid
       PARAMETER (MINOMDLIM = -1e-6,
      *     nlimit=10000,epsrel=1.0e-4,epsabs=1.0e-8,
      *     sqrttwo =1.414213562373095,npts2=3,
@@ -32,6 +32,7 @@ C
       double precision fpd_re,fpd_im,spoints(3)
       EXTERNAL DQAG, fepspd_re,fepspd_im,resfepspd_im,resfepspd_re
       common /epscom/ omdi,omsi,etai,tau,ky,kpar,zbb,bbi,zaa,w,om
+      common /mwd/ mw
       FLAG = .FALSE.
       i=dcmplx(0,1)
       om=dcmplx(omr,omi)
@@ -43,6 +44,7 @@ C
       if(omdi.LT.MINOMDLIM) then
          zaa=-dcmplx(omr,omi)/omdi
          zbb=-kpar*sqrttwo/omdi
+         mw=mweid
          w=zbb**2/4-zaa
          bbi=ky**2;
          omsi=-ky;

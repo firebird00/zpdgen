@@ -26,7 +26,7 @@ int main(int argc, char *argv[]){
   ps->kpar=0.0;
   za_min=-6.0-6.05i;
   za_max=6.0+5.95i;
-  dza=0.1+0.1i;
+  dza=0.5+0.5i;
   omsi=-ps->ky;
   numx=creal(za_max-za_min)/creal(dza);
   numy=cimag(za_max-za_min)/cimag(dza);

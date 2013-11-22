@@ -1,5 +1,5 @@
 lib_LIBRARIES = libgpdf.a
-libgpdf_a_SOURCES = wofzmw.f wofzh.f wofzwh16.f wofzwh8.f wofzwh4.f cpolyev.f inmzpd.f epszpd.f inmkur.f utils.f cbj0.f
+libgpdf_a_SOURCES = wofzmw.f wofzh.f wofzwh16.f wofzwh8.f wofzwh4.f cpolyev.f inmzpd.f epszpd.f inmkur.f utils.f cbj0.f pldisp_utils.c pldisp_specfun.c
 libgpdf_a_CFLAGS = -DH5_USE_18_API -fPIC -I./
 libgpdf_a_FFLAGS = -I./ -fPIC -fimplicit-none
 libgpdf_a_INCLUDES=$(all_includes)
@@ -9,13 +9,19 @@ noinst_HEADERS=doxy.cfg
 SUBDIRS = quadp
 ACLOCAL_AMFLAGS = -I m4
 
-noinst_PROGRAMS = timetest
+noinst_PROGRAMS = timetest test
 
 timetest_SOURCES = timetest.f
 timetest_LDADD = -L./ -L./quadp -lgpdf -lquadp -lgfortran
 timetest_CFLAGS = -I./
 timetest_FFLAGS = -I./ -fimplicit-none
 timetest_DEPENDENCIES = ./libgpdf.a
+
+test_SOURCES = test.c
+test_LDADD = -L./ -L./quadp -lgpdf -lquadp -lgfortran
+test_CFLAGS = -I./
+test_FFLAGS = -I./ -fimplicit-none
+test_DEPENDENCIES = ./libgpdf.a
 
 if ZPDGEN_PYTHON_ON
 bin_SCRIPTS=inmzpd.pyf

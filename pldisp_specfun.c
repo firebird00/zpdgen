@@ -3,18 +3,18 @@
 #include <gsl/gsl_vector.h>
 #include "gpdf.h"
 
-extern void wofzh_(double*, double*, double*, double*, int*);
+//extern void wofzh_(double*, double*, double*, double*, int*);
 //extern void wofzwh_(double*, double*, double*, double*, int*);
-extern void zbesj_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
-extern void zbesi_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
-extern void zbesk_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
+//extern void zbesj_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
+//extern void zbesi_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
+//extern void zbesk_(double*, double*, double*, int*, int*, double*, double*, int*, int*);
 extern void inmzpd_(double*, double*, double*,double *, int*, int*, int *, double*, double*, int*);
 extern void inmkur_(double*, double*, double*,double *, int*, int*, double*, double*, int*);
 extern void epszpd_(double*, double*, double*, int *, double*, double*, int*);
 extern void epskur_(double*, double*, double*, double*, double*, int*);
-extern void zgeev_( char* jobvl, char* jobvr, int* n, complex* a,
-		    int* lda, complex* w, complex* vl, int* ldvl, complex* vr, int* ldvr,
-		    complex* work, int* lwork, double* rwork, int* info );
+//extern void zgeev_( char* jobvl, char* jobvr, int* n, complex* a,
+//		    int* lda, complex* w, complex* vl, int* ldvl, complex* vr, int* ldvr,
+//		    complex* work, int* lwork, double* rwork, int* info );
 
 complex pldisp_inmzpd(complex za, double zb, double bi, int n, int m, int nw){
   complex res;
@@ -91,6 +91,7 @@ complex pldisp_epskur(complex om, pldisp_eps_pars *pars){
   free(cyi);
   return res;
 }
+/*
 complex pldisp_wofzh(complex z){
   complex res;
   double zr=creal(z);
@@ -109,7 +110,7 @@ complex pldisp_wofzh(complex z){
   free(cyi);
   return res;
 }
-/*
+
 complex pldisp_wofzwh(complex z){
   complex res;
   double zr=creal(z);
@@ -128,9 +129,7 @@ complex pldisp_wofzwh(complex z){
   free(cyi);
   return res;
   }
-*/
 
-/*this is an interface to Amos' complex Bessel function implementation in fortran*/
 complex pldisp_besselj(double nu, complex z){
   int kode=1;
   int n=1;
@@ -155,7 +154,6 @@ complex pldisp_besselj(double nu, complex z){
   free(cyi);
   return res;
 }
-
 complex pldisp_besseli(double nu, complex z){
   int kode=1;
   int n=1;
@@ -179,7 +177,6 @@ complex pldisp_besseli(double nu, complex z){
   free(cyi);
   return res;
 }
-
 complex pldisp_besselk(double nu, complex z){
   int kode=1;
   int n=1;
@@ -202,7 +199,7 @@ complex pldisp_besselk(double nu, complex z){
   free(cyi);
   return res;
 }
-
+*/
 
 /* modified from numerical recipes' "gauher.c" -ODG, here is the original copyright note:*/
 /* (C) Copr. 1986-92 Numerical Recipes Software ?421.1-9. */
