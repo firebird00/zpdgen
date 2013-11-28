@@ -60,11 +60,12 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          w=zbb**2/4-zaa
       endif
          alim=limsingsm
-         CALL DQAGI(Fpd_re,alim,1,epsabs,epsrel,resr,abserr,neval,ier,
-     *        nlimit,4000,last,iwork,work)
+         blim=dble(cdsqrt(w))
+         CALL DQAG(Fpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,neval,
+     *        ier,nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
-         CALL DQAGI(Fpd_im,alim,1,epsabs,epsrel,resi,abserr,neval,ier,
-     *        nlimit,4000,last,iwork,work)
+         CALL DQAG(Fpd_im,alim,blim,epsabs,epsrel,6,resi,abserr,neval,
+     *        ier,nlimit,4000,last,iwork,work)
          if(ier.ne.0) goto 100
          u=resr
          v=resi
@@ -115,20 +116,31 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       return
       end function Fpd_im
 
-      double complex function Fpd(s)
-      double precision s,limsingsm,xbr,Jr0,zbb,bbi
-      integer mf,nf,ierr,nz
-      double complex z1,z2,zaa,Gm,weidGm,w,zr
+      double complex function Fpd(t)
+      double precision s,t,limsingsm,xbr,Jr0,zbb,bbi,sqrtpi
+      integer mf,nf,ierr,nz,k
+      double complex z1,z2,zaa,Gm,GZ0,w,zr,i
+      logical flag
       common /inmcom/ mf,nf,zbb,bbi,zaa,w
       external weidGm
-      parameter (limsingsm = 1.0e-12)
-      zr=cdsqrt(4.0*w-2.0*s)
-      z1=0.5*(zbb+zr)
-      z2=0.5*(zbb-zr)
-      Gm=weidGm(z1,z2,mf)
+      parameter (limsingsm = 1.0e-12, sqrtpi = 1.77245385090552)
+      i=dcmplx(0,1)
+      s=2*(dble(w)-t**2+0.25d0*dimag(w)**2/t**2)
+      zr=t+i*0.5d0*dimag(w)/t
+      z1=0.5d0*zbb+zr
+      z2=0.5d0*zbb-zr
+      call wofzwh2(z1,z2,GZ0,mf,flag)
+      Gm=i*0.5d0*sqrtpi*GZ0
+      if (mf.gt.1) then
+         do 21 k=2,mf
+            Gm=Gm+0.5d0/sqrtpi*dgamma((mf-k+1)*0.5d0)*
+     *           ((z1)**(k-1)-(z2)**(k-1))
+ 21      continue
+      endif
       xbr=dsqrt(bbi*2.0*s)
       JR0=DBESJ0(XBR)
-      Fpd=dexp(-s)*Jr0**2*Gm*s**((nf-1)*0.5d0)
+      Fpd=2*dexp(-s)*Jr0**2*Gm*s**((nf-1)*0.5d0)*
+     *     (1-i*0.5d0*dimag(w)/t**2)
       return
       end function Fpd
 
