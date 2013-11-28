@@ -49,6 +49,7 @@ configure script has some special flags in particular
 ```
 --enable-python : generates the python wrapper interface.
 --enable-debug : enables the debug symbols to be built.
+--enable-profile : enables profiling.
 ```
 
 In other words, for example, you can enable the python wrapper interface using:
