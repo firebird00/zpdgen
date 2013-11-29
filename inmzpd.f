@@ -56,7 +56,7 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       nlimit=1000
       ier=0
       if(dabs(dimag(w)).LT.limsingsm) then
-         zaa=dble(za)+i*epsrel
+         zaa=dble(za)+i*limsinglg
          w=zbb**2/4-zaa
       endif
          alim=limsingsm
@@ -80,17 +80,17 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
          if(ier.ne.0) goto 100
          u=u-resr
          v=v-resi
-      else if(dimag(zaa).EQ.0.0d0.AND.dble(w).GT.0) then
-            Alim=-1.0+limsingsm
-            Blim=1.0-limsingsm
-         CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
-     *        neval,ier, nlimit,4000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         CALL DQAG(resFpd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
-     *        neval,ier,nlimit,4000,last,iwork,work)
-         if(ier.ne.0) goto 100
-         u=u-0.5*resr
-         v=v-0.5*resi
+c      else if(dimag(zaa).EQ.0.0d0.AND.dble(w).GT.0) then
+c            Alim=-1.0+limsingsm
+c            Blim=1.0-limsingsm
+c         CALL DQAG(resFpd_re,alim,blim,epsabs,epsrel,6,resr,abserr,
+c     *        neval,ier, nlimit,4000,last,iwork,work)
+c         if(ier.ne.0) goto 100
+c         CALL DQAG(resFpd_im,alim,blim,epsabs,epsrel,6,resi,abserr,
+c     *        neval,ier,nlimit,4000,last,iwork,work)
+c         if(ier.ne.0) goto 100
+c         u=u-0.5*resr
+c         v=v-0.5*resi
       endif
       RETURN
 *
@@ -117,7 +117,7 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       end function Fpd_im
 
       double complex function Fpd(t)
-      double precision s,t,limsingsm,xbr,Jr0,zbb,bbi,sqrtpi
+      double precision s,t,limsingsm,xbr,Jr0,zbb,bbi,sqrtpi,wi
       integer mf,nf,ierr,nz,k
       double complex z1,z2,zaa,Gm,GZ0,w,zr,i
       logical flag
@@ -125,8 +125,9 @@ c     *     epsrel=1.0e-2,epsabs=1.0e-6)
       external weidGm
       parameter (limsingsm = 1.0e-12, sqrtpi = 1.77245385090552)
       i=dcmplx(0,1)
-      s=2*(dble(w)-t**2+0.25d0*dimag(w)**2/t**2)
-      zr=t+i*0.5d0*dimag(w)/t
+      wi=dimag(w)
+      s=2*(dble(w)-t**2+0.25d0*wi**2/t**2)
+      zr=t+i*0.5d0*wi/t
       z1=0.5d0*zbb+zr
       z2=0.5d0*zbb-zr
       call wofzwh2(z1,z2,GZ0,mf,flag)
