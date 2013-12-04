@@ -26,16 +26,16 @@ for ns in nlist:
     cs=plt.contour(np.real(za),np.imag(za),np.imag(inm),cnts,colors='k',linewidths=wdts*0.5)
     aa=r'$Im[I_{'+str(n)+str(m)+r'}(\zeta_\alpha,\zeta_\beta,b)]$'
     plt.text(-1,3,aa,fontsize=14)
-    if (m!=4 and n!=0):
+    if (m!=4 and n!=1):
         plt.tick_params(labelbottom='off',labelleft='off')
-    elif(n==0 and m==4) :
+    elif(n==1 and m==4) :
         plt.text(2,-7.5,r'$Re[\zeta_\alpha]$',fontsize=14)
         plt.text(-7.5,3,r'$Im[\zeta_\alpha]$',fontsize=14,rotation=90)
         plt.tick_params(axis='both', which='major', labelsize=9,labelbottom='on',labelleft='on')
     elif(m==4) :
         plt.text(2,-7.5,r'$Re[\zeta_\alpha]$',fontsize=14)
         plt.tick_params(axis='both', which='major', labelsize=9,labelbottom='on',labelleft='off')
-    elif(n==0): 
+    elif(n==1): 
         plt.text(-7.5,3,r'$Im[\zeta_\alpha]$',fontsize=14,rotation=90)
         plt.tick_params(axis='both', which='major', labelsize=9,labelleft='on',labelbottom='off')
 plt.subplots_adjust(wspace=0.02,hspace=0.02,left=0.05,right=0.92,top=0.95,bottom=0.05)
